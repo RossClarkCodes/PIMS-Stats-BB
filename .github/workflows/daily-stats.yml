@@ -29,7 +29,7 @@ jobs:
         
     - name: Create team stats fetcher script
       run: |
-        cat > fetch-team-stats.js << 'EOF'
+        cat > fetch-team-stats.js << EOF
         const fs = require('fs');
         const https = require('https');
         
