@@ -30,526 +30,83 @@ jobs:
     - name: Install dependencies
       run: npm install node-fetch
       
-    - name: Create stats fetcher script
+    - name: Create team stats fetcher script
       run: |
-        cat > fetch-stats.js << 'EOF'
+        cat > fetch-team-stats.js << 'EOF'
         const fs = require('fs');
+        const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
         
-        // Utility function to make API calls with error handling
-        async function makeAPICall(url, description) {
-          try {
-            console.log(`Fetching ${description} from: ${url}`);
-            const response = await fetch(url, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json'
-              }
-            });
-            
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            console.log(`Successfully fetched ${description}, data type:`, typeof data);
-            return data;
-          } catch (error) {
-            console.error(`Error fetching ${description}:`, error.message);
-            throw error;
-          }
-        }
+        const TEAMS = [
+          { id: 20, name: 'Winnipeg Blue Bombers', abbr: 'WPG' },
+          { id: 1, name: 'BC Lions', abbr: 'BC' },
+          { id: 6, name: 'Calgary Stampeders', abbr: 'CGY' },
+          { id: 7, name: 'Edmonton Elks', abbr: 'EDM' },
+          { id: 8, name: 'Hamilton Tiger Cats', abbr: 'HAM' },
+          { id: 11, name: 'Montreal Alouettes', abbr: 'MTL' },
+          { id: 13, name: 'Ottawa Redblacks', abbr: 'OTT' },
+          { id: 17, name: 'Saskatchewan Roughriders', abbr: 'SSK' },
+          { id: 19, name: 'Toronto Argonauts', abbr: 'TOR' }
+        ];
         
-        // Filter 2025 season data
-        function filter2025Data(playerData) {
-          const filtered = { ...playerData };
-          
-          if (filtered.seasons) {
-            filtered.seasons = filtered.seasons.filter(season => season.season === 2025);
-          }
-          
-          if (filtered.fixtures) {
-            filtered.fixtures = filtered.fixtures.filter(fixture => fixture.season === 2025);
-          }
-          
-          return filtered;
-        }
-        
-        // Calculate season totals from individual games
-        function calculateSeasonTotals(games) {
-          const totals = {
-            games: games.length,
-            tackles: 0,
-            sacks: 0,
-            interceptions: 0,
-            fumblesForced: 0,
-            passesDefended: 0,
-            tacklesSolo: 0,
-            tacklesAssisted: 0,
-            fumblesRecoveries: 0,
-            touchdowns: 0,
-            carries: 0,
-            rushingYards: 0,
-            receptions: 0,
-            receivingYards: 0,
-            passesAttempted: 0,
-            passesIntercepted: 0,
-            passesSacked: 0,
-            fieldGoalsAttempted: 0,
-            fieldGoalsSucceeded: 0,
-            extraPointsAttempted: 0,
-            extraPointsSucceeded: 0,
-            punts: 0,
-            puntingYards: 0,
-            kickoffs: 0,
-            kickoffsYards: 0,
-            touchdownsPasses: 0,
-            touchdownsRushing: 0,
-            touchdownsReceptions: 0,
-            fumblesLost: 0,
-            quarterbackHits: 0,
-            safeties: 0,
-            tacklesForLoss: 0,
-            sacksForLossYards: 0,
-            interceptionsReturns: 0,
-            interceptionsReturnsYards: 0,
-            fumblesReturnsYards: 0,
-            passesRating: 0,
-            passesSucceededPercentage: 0,
-            fieldGoalsSucceededPercentage: 0,
-            puntingYardsGrossAverage: 0,
-            puntingYardsNetAverage: 0,
-            puntingInsideTwenty: 0,
-            puntingTouchbacks: 0,
-            kickoffsReturns: 0,
-            kickoffsReturnsYards: 0,
-            kickoffsReturnsYardsAverage: 0,
-            kickoffsTouchbacks: 0,
-            kickoffsInsideTwenty: 0,
-            kickoffsInsideEndZone: 0,
-            kickoffsYardsAverage: 0,
-            kickoffsYardsLongest: 0,
-            puntingYardsLongest: 0,
-            fieldGoalsYards: 0,
-            fieldGoalsSucceededYardsLongest: 0,
-            fieldGoalsMissed: 0,
-            fieldGoalsMissedReturns: 0,
-            fieldGoalsMissedReturnsYards: 0,
-            fieldGoalsMissedReturnsYardsAverage: 0,
-            fieldGoalsMissedReturnsYardsLongest: 0,
-            fieldGoalsAverageYards: 0,
-            fieldGoalsBlocked: 0,
-            defensiveFieldGoalsBlocked: 0,
-            extraPointsBlocked: 0,
-            defensiveExtraPointsBlocked: 0,
-            puntingYardsNet: 0,
-            puntingKickerReturnsYards: 0,
-            puntsBlocked: 0,
-            defensivePuntsBlocked: 0,
-            kickoffsFairCatches: 0,
-            kickoffsKickerReturnsYards: 0,
-            kickoffsOutOfBounds: 0,
-            kickoffsReturnsYardsLongest: 0,
-            puntingYardsLongest: 0,
-            passesSucceededYardsLongest: 0,
-            passesSucceededThirtyPlusYards: 0,
-            passesSackedFirstDown: 0,
-            passesSackedSecondDown: 0,
-            passesSackedThirdDown: 0,
-            passesAttemptedYardsAverage: 0,
-            touchdownsFieldGoalsReturns: 0,
-            touchdownsFumblesOwnRecovery: 0,
-            touchdownsFumblesReturn: 0,
-            touchdownsInterceptionsReturns: 0,
-            touchdownsInterceptionsReturnsYardsLongest: 0,
-            touchdownsKickoffsReturns: 0,
-            touchdownsKickoffsReturnsYardsLongest: 0,
-            touchdownsPassesYardsLongest: 0,
-            touchdownsPuntingReturns: 0,
-            touchdownsPuntingReturnsYardsLongest: 0,
-            touchdownsReceptionsYardsLongest: 0,
-            touchdownsReturns: 0,
-            touchdownsRushingYardsLongest: 0,
-            twoPointPassAttempted: 0,
-            twoPointPassSucceeded: 0,
-            twoPointReceptionAttempted: 0,
-            twoPointReceptionSucceeded: 0,
-            twoPointRushAttempted: 0,
-            twoPointRushSucceeded: 0,
-            twoPointDefensiveConversionsAttempted: 0,
-            twoPointDefensiveConversionsSucceeded: 0,
-            twoPointConversionsDefense: 0,
-            penaltiesChargedDefense: 0,
-            penaltiesChargedOffense: 0,
-            penaltiesDeclined: 0,
-            penaltiesForLossYards: 0,
-            firstDownsByPenalties: 0,
-            kneels: 0,
-            kneelsYards: 0,
-            losses: 0,
-            lossesYards: 0,
-            returnsYards: 0,
-            turnovers: 0,
-            turnoversOnDowns: 0,
-            offenseYards: 0,
-            plays: 0,
-            timeOfPossessionSeconds: 0,
-            playYardsAverage: 0,
-            hasParticipated: 0,
-            wasStarter: 0,
-            tacklesSpecialTeam: 0,
-            tacklesAssistedSpecialTeam: 0,
-            tacklesForLossYards: 0,
-            fumbles: 0,
-            fumblesOutOfBounds: 0,
-            fumblesRecoveriesFromOpponents: 0,
-            fumblesRecoveriesOwn: 0,
-            fumblesRecoveriesOwnYards: 0,
-            fumblesReturnsYardsLongest: 0,
-            interceptionsReturnsYardsLongest: 0,
-            penaltiesChargedDefense: 0,
-            penaltiesChargedOffense: 0,
-            penaltiesDeclined: 0,
-            penaltiesForLossYards: 0,
-            firstDownsByPenalties: 0
+        async function fetchTeamStats(team) {
+          const url = `https://echo.pims.cfl.ca/api/stats/teams/pims/${team.id}`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`Failed to fetch ${team.name}`);
+          const data = await res.json();
+          // Find 2025 season
+          const season = (data.seasons || []).find(s => s.season === 2025);
+          return {
+            team: team.name,
+            team_id: team.id,
+            abbr: team.abbr,
+            season: 2025,
+            stats: season || {}
           };
-          
-          games.forEach(game => {
-            if (game.stats) {
-              Object.keys(totals).forEach(key => {
-                if (key !== 'games' && game.stats[key] !== undefined) {
-                  totals[key] += game.stats[key];
-                }
-              });
-            }
-          });
-          
-          return totals;
         }
         
-        // Calculate team totals
-        function calculateTeamStats(allPlayers) {
-          const totals = {
-            totalPlayers: allPlayers.length,
-            totalGames: 0,
-            totalTackles: 0,
-            totalSacks: 0,
-            totalInterceptions: 0,
-            totalFumblesForced: 0,
-            totalPassesDefended: 0,
-            totalFumbleRecoveries: 0,
-            totalTouchdowns: 0,
-            totalYards: 0
-          };
-          
-          allPlayers.forEach(player => {
-            const games2025 = player.fixtures ? player.fixtures.filter(f => f.season === 2025) : [];
-            const seasonTotals = calculateSeasonTotals(games2025);
-            
-            if (seasonTotals.games > 0) {
-              totals.totalGames += seasonTotals.games;
-              totals.totalTackles += seasonTotals.tackles;
-              totals.totalSacks += seasonTotals.sacks;
-              totals.totalInterceptions += seasonTotals.interceptions;
-              totals.totalFumblesForced += seasonTotals.fumblesForced;
-              totals.totalPassesDefended += seasonTotals.passesDefended;
-              totals.totalFumbleRecoveries += seasonTotals.fumblesRecoveries;
-              totals.totalTouchdowns += seasonTotals.touchdowns;
-              totals.totalYards += seasonTotals.yards;
+        async function main() {
+          const allStats = [];
+          let wpgStats = null;
+          for (const team of TEAMS) {
+            try {
+              const stats = await fetchTeamStats(team);
+              allStats.push(stats);
+              if (team.id === 20) wpgStats = stats;
+              console.log(`Fetched stats for ${team.name}`);
+            } catch (e) {
+              console.error(`Error fetching stats for ${team.name}:`, e.message);
             }
-          });
-          
-          return totals;
-        }
-        
-        async function fetchStats() {
-          try {
-            console.log('Starting Blue Bombers stats fetch...');
-            
-            // Team roster URL
-            const ROSTER_URL = 'https://echo.pims.cfl.ca/api/teams/20/roster';
-            
-            console.log('Fetching team roster...');
-            const rosterResponse = await makeAPICall(ROSTER_URL, 'Team roster');
-            
-            // Handle different possible response structures
-            let rosterData = [];
-            if (Array.isArray(rosterResponse)) {
-              rosterData = rosterResponse;
-            } else if (rosterResponse && Array.isArray(rosterResponse.rosterplayers)) {
-              rosterData = rosterResponse.rosterplayers;
-            } else if (rosterResponse && Array.isArray(rosterResponse.data)) {
-              rosterData = rosterResponse.data;
-            } else {
-              console.error('Unexpected roster response structure:', rosterResponse);
-              rosterData = [];
-            }
-            
-            console.log(`Found ${rosterData.length} players in roster`);
-            
-            // Extract player IDs from the roster
-            const rosterPlayerIds = rosterData.map(player => player.player_id || player.id || player.ID).filter(id => id);
-            console.log(`Extracted ${rosterPlayerIds.length} player IDs`);
-            
-            const allPlayersData = [];
-            
-            for (let i = 0; i < rosterPlayerIds.length; i++) {
-              const playerId = rosterPlayerIds[i];
-              console.log(`Fetching stats for player ${i + 1}/${rosterPlayerIds.length} (ID: ${playerId})`);
-              
-              try {
-                const playerStatsUrl = `https://echo.pims.cfl.ca/api/stats/players/pims_player/${playerId}`;
-                const playerData = await makeAPICall(playerStatsUrl, `Player ${playerId} stats`);
-                
-                // Filter to only 2025 data
-                const filtered2025Data = filter2025Data(playerData);
-                
-                if (filtered2025Data.seasons.length > 0 || filtered2025Data.fixtures.length > 0) {
-                  allPlayersData.push(filtered2025Data);
-                }
-                
-                // Small delay to prevent overwhelming the API
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-              } catch (error) {
-                console.error(`Error fetching stats for player ${playerId}:`, error.message);
-                // Continue with other players even if one fails
-              }
-            }
-            
-            console.log(`Successfully fetched stats for ${allPlayersData.length} players with 2025 data`);
-            
-            // Calculate team statistics
-            const teamStats = calculateTeamStats(allPlayersData);
-            console.log('Team stats calculated:', teamStats);
-            
-            // Generate JSON files
-            const timestamp = new Date().toISOString();
-            
-            // Complete data
-            const completeData = {
-              team: 'Winnipeg Blue Bombers',
-              season: 2025,
-              generatedAt: timestamp,
-              teamStats: teamStats,
-              roster: rosterData,
-              players: allPlayersData
-            };
-            
-            // Season stats only
-            const seasonStatsData = {
-              team: 'Winnipeg Blue Bombers',
-              season: 2025,
-              generatedAt: timestamp,
-              teamStats: teamStats,
-              players: allPlayersData.map(playerData => {
-                const player = rosterData.find(p => p.player_id === playerData.player_id);
-                const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
-                const seasonTotals = calculateSeasonTotals(games2025);
-                
-                return {
-                  player_id: playerData.player_id,
-                  name: player ? `${player.firstname || ''} ${player.lastname || ''}`.trim() : 'Unknown Player',
-                  position: player ? player.position : 'N/A',
-                  jersey: player ? player.jersey_no : 'N/A',
-                  birthdate: player ? player.birthdate : 'N/A',
-                  height_ft: player ? player.height_ft : 'N/A',
-                  height_in: player ? player.height_in : 'N/A',
-                  weight_lbs: player ? player.weight_lbs : 'N/A',
-                  college: player ? player.college : 'N/A',
-                  gamesPlayed: seasonTotals.games,
-                  seasonTotals: seasonTotals
-                };
-              })
-            };
-            
-            // Team summary
-            const teamSummaryData = {
-              team: 'Winnipeg Blue Bombers',
-              season: 2025,
-              generatedAt: timestamp,
-              teamStats: teamStats,
-              playerCount: allPlayersData.length,
-              playersWithStats: allPlayersData.map(playerData => {
-                const player = rosterData.find(p => p.player_id === playerData.player_id);
-                const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
-                
-                return {
-                  name: player ? `${player.firstname || ''} ${player.lastname || ''}`.trim() : 'Unknown Player',
-                  position: player ? player.position : 'N/A',
-                  jersey: player ? player.jersey_no : 'N/A',
-                  gamesPlayed: games2025.length
-                };
-              })
-            };
-            
-            console.log('Writing files to public directory...');
-            
-            // Create public directory if it doesn't exist
-            if (!fs.existsSync('public')) {
-              fs.mkdirSync('public');
-            }
-            
-            // Write files
-            fs.writeFileSync('public/blue_bombers_2025_complete.json', JSON.stringify(completeData, null, 2));
-            fs.writeFileSync('public/blue_bombers_2025_season_stats.json', JSON.stringify(seasonStatsData, null, 2));
-            fs.writeFileSync('public/blue_bombers_2025_team_summary.json', JSON.stringify(teamSummaryData, null, 2));
-            
-            // Generate XML files
-            const generateXML = (data, rootElement) => {
-              let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-              xml += `<${rootElement}>\n`;
-              xml += `  <Team>${data.team}</Team>\n`;
-              xml += `  <Season>${data.season}</Season>\n`;
-              xml += `  <GeneratedAt>${data.generatedAt}</GeneratedAt>\n`;
-              
-              if (data.playerCount) {
-                xml += `  <PlayerCount>${data.playerCount}</PlayerCount>\n`;
-              }
-              
-              // Team stats
-              xml += '  <TeamStats>\n';
-              Object.entries(data.teamStats).forEach(([key, value]) => {
-                xml += `    <${key}>${value}</${key}>\n`;
-              });
-              xml += '  </TeamStats>\n';
-              
-              // Roster (if complete data)
-              if (data.roster) {
-                xml += '  <Roster>\n';
-                data.roster.forEach(player => {
-                  xml += '    <RosterPlayer>\n';
-                  Object.entries(player).forEach(([key, value]) => {
-                    if (typeof value === 'object' && value !== null) {
-                      xml += `      <${key}>\n`;
-                      Object.entries(value).forEach(([subKey, subValue]) => {
-                        xml += `        <${subKey}>${subValue}</${subKey}>\n`;
-                      });
-                      xml += `      </${key}>\n`;
-                    } else {
-                      xml += `      <${key}>${value}</${key}>\n`;
-                    }
-                  });
-                  xml += '    </RosterPlayer>\n';
-                });
-                xml += '  </Roster>\n';
-              }
-              
-              // Players
-              if (data.players) {
-                xml += '  <Players>\n';
-                data.players.forEach(player => {
-                  xml += '    <Player>\n';
-                  
-                  if (player.player_id) {
-                    xml += `      <PlayerID>${player.player_id}</PlayerID>\n`;
-                    xml += `      <Name>${player.name}</Name>\n`;
-                    xml += `      <Position>${player.position}</Position>\n`;
-                    xml += `      <Jersey>${player.jersey}</Jersey>\n`;
-                    
-                    if (player.birthdate) {
-                      xml += `      <Birthdate>${player.birthdate}</Birthdate>\n`;
-                      xml += `      <HeightFt>${player.height_ft}</HeightFt>\n`;
-                      xml += `      <HeightIn>${player.height_in}</HeightIn>\n`;
-                      xml += `      <WeightLbs>${player.weight_lbs}</WeightLbs>\n`;
-                      xml += `      <College>${player.college}</College>\n`;
-                    }
-                    
-                    if (player.gamesPlayed !== undefined) {
-                      xml += `      <GamesPlayed>${player.gamesPlayed}</GamesPlayed>\n`;
-                    }
-                    
-                    if (player.seasonTotals) {
-                      xml += '      <SeasonTotals>\n';
-                      Object.entries(player.seasonTotals).forEach(([key, value]) => {
-                        if (key !== 'games') {
-                          xml += `        <${key}>${value}</${key}>\n`;
-                        }
-                      });
-                      xml += '      </SeasonTotals>\n';
-                    }
-                  } else {
-                    // Complete data format
-                    xml += `      <ID>${player.ID}</ID>\n`;
-                    
-                    if (player.seasons && player.seasons.length > 0) {
-                      xml += '      <Seasons>\n';
-                      player.seasons.forEach(season => {
-                        xml += '        <Season>\n';
-                        Object.entries(season).forEach(([key, value]) => {
-                          xml += `          <${key}>${value}</${key}>\n`;
-                        });
-                        xml += '        </Season>\n';
-                      });
-                      xml += '      </Seasons>\n';
-                    }
-                    
-                    if (player.fixtures && player.fixtures.length > 0) {
-                      xml += '      <Fixtures>\n';
-                      player.fixtures.forEach(fixture => {
-                        xml += '        <Fixture>\n';
-                        Object.entries(fixture).forEach(([key, value]) => {
-                          if (key === 'stats' && typeof value === 'object') {
-                            xml += '          <Stats>\n';
-                            Object.entries(value).forEach(([statKey, statValue]) => {
-                              xml += `            <${statKey}>${statValue}</${statKey}>\n`;
-                            });
-                            xml += '          </Stats>\n';
-                          } else {
-                            xml += `          <${key}>${value}</${key}>\n`;
-                          }
-                        });
-                        xml += '        </Fixture>\n';
-                      });
-                      xml += '      </Fixtures>\n';
-                    }
-                  }
-                  
-                  xml += '    </Player>\n';
-                });
-                xml += '  </Players>\n';
-              }
-              
-              xml += `</${rootElement}>`;
-              return xml;
-            };
-            
-            fs.writeFileSync('public/blue_bombers_2025_complete.xml', generateXML(completeData, 'BlueBombers2025Stats'));
-            fs.writeFileSync('public/blue_bombers_2025_season_stats.xml', generateXML(seasonStatsData, 'BlueBombers2025SeasonStats'));
-            fs.writeFileSync('public/blue_bombers_2025_team_summary.xml', generateXML(teamSummaryData, 'BlueBombers2025TeamSummary'));
-            
-            console.log('Stats files generated successfully!');
-            console.log('Files created:');
-            console.log('- blue_bombers_2025_complete.json');
-            console.log('- blue_bombers_2025_season_stats.json');
-            console.log('- blue_bombers_2025_team_summary.json');
-            console.log('- blue_bombers_2025_complete.xml');
-            console.log('- blue_bombers_2025_season_stats.xml');
-            console.log('- blue_bombers_2025_team_summary.xml');
-            
-          } catch (error) {
-            console.error('Error:', error);
           }
+          // Write all teams JSON
+          if (!fs.existsSync('public')) fs.mkdirSync('public');
+          fs.writeFileSync('public/all_teams_2025_stats.json', JSON.stringify(allStats, null, 2));
+          // Write WPG JSON
+          if (wpgStats) fs.writeFileSync('public/team_wpg_2025_stats.json', JSON.stringify(wpgStats, null, 2));
+          // Write all teams XML
+          const allTeamsXML = '<?xml version="1.0" encoding="UTF-8"?>\n<Teams2025Stats>\n' +
+            allStats.map(team => {
+              return `  <Team>\n    <Name>${team.team}</Name>\n    <ID>${team.team_id}</ID>\n    <Abbr>${team.abbr}</Abbr>\n    <Season>${team.season}</Season>\n    <Stats>\n' +
+                Object.entries(team.stats).map(([k,v]) => `      <${k}>${v}</${k}>`).join('\n') +
+                '\n    </Stats>\n  </Team>';
+            }).join('\n') + '\n</Teams2025Stats>';
+          fs.writeFileSync('public/all_teams_2025_stats.xml', allTeamsXML);
+          // Write WPG XML
+          if (wpgStats) {
+            const wpgXML = '<?xml version="1.0" encoding="UTF-8"?>\n<Team2025Stats>\n' +
+              `  <Name>${wpgStats.team}</Name>\n  <ID>${wpgStats.team_id}</ID>\n  <Abbr>${wpgStats.abbr}</Abbr>\n  <Season>${wpgStats.season}</Season>\n  <Stats>\n' +
+              Object.entries(wpgStats.stats).map(([k,v]) => `    <${k}>${v}</${k}>`).join('\n') +
+              '\n  </Stats>\n</Team2025Stats>';
+            fs.writeFileSync('public/team_wpg_2025_stats.xml', wpgXML);
+          }
+          console.log('All team stats files written.');
         }
-        
-        fetchStats().catch(console.error);
+        main().catch(e => { console.error(e); process.exit(1); });
         EOF
-        
     - name: Create public directory
       run: mkdir -p public
       
-    - name: Fetch stats and generate files
-      run: |
-        echo "Starting stats fetch..."
-        node fetch-stats.js
-        echo "Stats fetch completed"
-        ls -la public/
-        echo "Checking if files were created..."
-        if [ -f "public/blue_bombers_2025_season_stats.json" ]; then
-          echo "JSON file exists, checking content..."
-          head -20 public/blue_bombers_2025_season_stats.json
-        else
-          echo "JSON file not found!"
-        fi
+    - name: Fetch and write all team stats
+      run: node fetch-team-stats.js
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
