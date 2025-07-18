@@ -320,13 +320,23 @@ async function main() {
       console.log('⚠ Created fallback team_wpg_2025_stats.json');
     }
     
-    // All players JSON
-    fs.writeFileSync('public/all_players_2025_stats.json', JSON.stringify(allPlayers, null, 2));
-    console.log('✓ Written all_players_2025_stats.json');
-    
-    // WPG players JSON
-    fs.writeFileSync('public/wpg_players_2025_stats.json', JSON.stringify(wpgPlayers, null, 2));
-    console.log('✓ Written wpg_players_2025_stats.json');
+    // Write all players JSON (keyed by jersey_no, only has_stats: true)
+    const allPlayersFiltered = allPlayers.filter(p => p.has_stats && p.jersey_no != null);
+    const allPlayersByJersey = {};
+    for (const player of allPlayersFiltered) {
+      allPlayersByJersey[String(player.jersey_no)] = player;
+    }
+    fs.writeFileSync('public/all_players_2025_stats.json', JSON.stringify(allPlayersByJersey, null, 2));
+    console.log('✓ Written all_players_2025_stats.json (keyed by jersey_no)');
+
+    // Write WPG players JSON (keyed by jersey_no, only has_stats: true)
+    const wpgPlayersFiltered = wpgPlayers.filter(p => p.has_stats && p.jersey_no != null);
+    const wpgPlayersByJersey = {};
+    for (const player of wpgPlayersFiltered) {
+      wpgPlayersByJersey[String(player.jersey_no)] = player;
+    }
+    fs.writeFileSync('public/wpg_players_2025_stats.json', JSON.stringify(wpgPlayersByJersey, null, 2));
+    console.log('✓ Written wpg_players_2025_stats.json (keyed by jersey_no)');
     
     // Team stats XML
     const allTeamsXML = '<?xml version="1.0" encoding="UTF-8"?>\n<Teams2025Stats>\n' +
