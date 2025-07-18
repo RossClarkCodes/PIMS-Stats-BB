@@ -33,6 +33,31 @@ jobs:
     - name: Fetch and write all team stats
       run: node fetch-team-stats.js
       
+    - name: Copy landing page
+      run: cp public/index.html public/index.html.bak 2>/dev/null || true
+      
+    - name: Validate generated files
+      run: |
+        echo "Checking for required files..."
+        required_files=("all_teams_2025_stats.json" "team_wpg_2025_stats.json" "all_teams_2025_stats.xml" "team_wpg_2025_stats.xml")
+        missing_files=()
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "public/$file" ]; then
+            missing_files+=("$file")
+          fi
+        done
+        
+        if [ ${#missing_files[@]} -gt 0 ]; then
+          echo "❌ Missing required files: ${missing_files[*]}"
+          exit 1
+        else
+          echo "✅ All required files present"
+        fi
+        
+        echo "File sizes:"
+        ls -lh public/*.json public/*.xml
+      
     - name: Setup Pages
       uses: actions/configure-pages@v4
       

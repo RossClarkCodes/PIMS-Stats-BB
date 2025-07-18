@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winnipeg Blue Bombers 2025 Stats</title>
+    <title>CFL Teams 2025 Stats</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -71,35 +71,34 @@
             color: #ccc;
             font-size: 0.9em;
         }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-online {
+            background-color: #4CAF50;
+        }
+        
+        .status-offline {
+            background-color: #f44336;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏈 Winnipeg Blue Bombers 2025 Stats</h1>
-        
-        <div class="file-section">
-            <h3>Complete Data (Roster + Stats)</h3>
-            <div class="file-links">
-                <a href="blue_bombers_2025_complete.json" class="file-link">📄 Complete JSON</a>
-                <a href="blue_bombers_2025_complete.xml" class="file-link">📄 Complete XML</a>
-            </div>
-        </div>
-        
-        <div class="file-section">
-            <h3>Season Stats Only</h3>
-            <div class="file-links">
-                <a href="blue_bombers_2025_season_stats.json" class="file-link">📊 Season Stats JSON</a>
-                <a href="blue_bombers_2025_season_stats.xml" class="file-link">📊 Season Stats XML</a>
-            </div>
-        </div>
-        
-        <div class="file-section">
-            <h3>Team Summary Only</h3>
-            <div class="file-links">
-                <a href="blue_bombers_2025_team_summary.json" class="file-link">📈 Team Summary JSON</a>
-                <a href="blue_bombers_2025_team_summary.xml" class="file-link">📈 Team Summary XML</a>
-            </div>
-        </div>
+        <h1>🏈 CFL Teams 2025 Stats</h1>
         
         <div class="file-section">
             <h3>All Teams 2025 Season Stats</h3>
@@ -108,34 +107,71 @@
                 <a href="all_teams_2025_stats.xml" class="file-link">🌎 All Teams XML</a>
             </div>
         </div>
+        
         <div class="file-section">
-            <h3>Blue Bombers 2025 Team Stats Only</h3>
+            <h3>Winnipeg Blue Bombers 2025 Team Stats</h3>
             <div class="file-links">
-                <a href="team_wpg_2025_stats.json" class="file-link">💙 Bombers JSON</a>
-                <a href="team_wpg_2025_stats.xml" class="file-link">💙 Bombers XML</a>
+                <a href="team_wpg_2025_stats.json" class="file-link">💙 Blue Bombers JSON</a>
+                <a href="team_wpg_2025_stats.xml" class="file-link">💙 Blue Bombers XML</a>
             </div>
         </div>
         
         <div class="last-updated">
-            <p>Last updated: <span id="lastUpdated"></span></p>
+            <p><span class="status-indicator status-online" id="statusIndicator"></span>Status: <span id="statusText">Checking...</span></p>
+            <p>Last updated: <span id="lastUpdated">Checking...</span></p>
             <p>Data is automatically updated daily at 2 AM UTC</p>
         </div>
     </div>
     
     <script>
-        // Get the last modified time of the most recent file
-        fetch('blue_bombers_2025_season_stats.json')
-            .then(response => response.headers.get('last-modified'))
-            .then(lastModified => {
-                if (lastModified) {
-                    document.getElementById('lastUpdated').textContent = new Date(lastModified).toLocaleString();
-                } else {
-                    document.getElementById('lastUpdated').textContent = 'Unknown';
+        // Check if files are accessible
+        async function checkFileStatus() {
+            const files = [
+                'all_teams_2025_stats.json',
+                'team_wpg_2025_stats.json'
+            ];
+            
+            let accessibleCount = 0;
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file);
+                    if (response.ok) {
+                        accessibleCount++;
+                        // Get last modified time from the first accessible file
+                        if (accessibleCount === 1) {
+                            const lastModified = response.headers.get('last-modified');
+                            if (lastModified) {
+                                document.getElementById('lastUpdated').textContent = new Date(lastModified).toLocaleString();
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error checking ${file}:`, error);
                 }
-            })
-            .catch(() => {
+            }
+            
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (accessibleCount === files.length) {
+                statusIndicator.className = 'status-indicator status-online';
+                statusText.textContent = 'All files accessible';
+            } else if (accessibleCount > 0) {
+                statusIndicator.className = 'status-indicator status-online';
+                statusText.textContent = 'Partially available';
+            } else {
+                statusIndicator.className = 'status-indicator status-offline';
+                statusText.textContent = 'Files unavailable';
                 document.getElementById('lastUpdated').textContent = 'Unknown';
-            });
+            }
+        }
+        
+        // Check status on page load
+        checkFileStatus();
+        
+        // Recheck every 30 seconds
+        setInterval(checkFileStatus, 30000);
     </script>
 </body>
 </html> 
