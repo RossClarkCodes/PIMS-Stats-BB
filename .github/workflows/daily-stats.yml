@@ -56,20 +56,36 @@ jobs:
             // Click the fetch button
             await page.click('#fetchBtn');
             
+            console.log('Waiting for download area to appear...');
             // Wait for the download area to appear (indicating completion)
-            await page.waitForSelector('#downloadArea', { timeout: 300000 }); // 5 minutes timeout
+            await page.waitForSelector('#downloadArea', { timeout: 600000 }); // 10 minutes timeout
             
+            console.log('Download area found, waiting for processing to complete...');
             // Wait a bit more for all processing to complete
-            await page.waitForTimeout(5000);
+            await page.waitForTimeout(10000);
+            
+            console.log('Extracting data from page...');
             
             // Extract the data using page.evaluate
             const data = await page.evaluate(() => {
               // Get the current data from the page
-              return {
+              const result = {
                 teamStats: window.teamStats || {},
                 allPlayersData: window.allPlayersData || [],
                 rosterData: window.rosterData || []
               };
+              console.log('Data extracted:', {
+                teamStatsKeys: Object.keys(result.teamStats),
+                playersCount: result.allPlayersData.length,
+                rosterCount: result.rosterData.length
+              });
+              return result;
+            });
+            
+            console.log('Data received from page:', {
+              teamStatsKeys: Object.keys(data.teamStats),
+              playersCount: data.allPlayersData.length,
+              rosterCount: data.rosterData.length
             });
             
             // Generate JSON files
@@ -423,7 +439,18 @@ jobs:
       run: mkdir -p public
       
     - name: Fetch stats and generate files
-      run: node fetch-stats.js
+      run: |
+        echo "Starting stats fetch..."
+        node fetch-stats.js
+        echo "Stats fetch completed"
+        ls -la public/
+        echo "Checking if files were created..."
+        if [ -f "public/blue_bombers_2025_season_stats.json" ]; then
+          echo "JSON file exists, checking content..."
+          head -20 public/blue_bombers_2025_season_stats.json
+        else
+          echo "JSON file not found!"
+        fi
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
