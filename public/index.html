@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winnipeg Blue Bombers 2025 Stats</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #003366, #0066cc);
+            margin: 0;
+            padding: 20px;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .file-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .file-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        
+        .file-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .file-link {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .file-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+        }
+        
+        .last-updated {
+            text-align: center;
+            margin-top: 30px;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 Winnipeg Blue Bombers 2025 Stats</h1>
+        
+        <div class="file-section">
+            <h3>Complete Data (Roster + Stats)</h3>
+            <div class="file-links">
+                <a href="blue_bombers_2025_complete.json" class="file-link">📄 Complete JSON</a>
+                <a href="blue_bombers_2025_complete.xml" class="file-link">📄 Complete XML</a>
+            </div>
+        </div>
+        
+        <div class="file-section">
+            <h3>Season Stats Only</h3>
+            <div class="file-links">
+                <a href="blue_bombers_2025_season_stats.json" class="file-link">📊 Season Stats JSON</a>
+                <a href="blue_bombers_2025_season_stats.xml" class="file-link">📊 Season Stats XML</a>
+            </div>
+        </div>
+        
+        <div class="file-section">
+            <h3>Team Summary Only</h3>
+            <div class="file-links">
+                <a href="blue_bombers_2025_team_summary.json" class="file-link">📈 Team Summary JSON</a>
+                <a href="blue_bombers_2025_team_summary.xml" class="file-link">📈 Team Summary XML</a>
+            </div>
+        </div>
+        
+        <div class="last-updated">
+            <p>Last updated: <span id="lastUpdated"></span></p>
+            <p>Data is automatically updated daily at 2 AM UTC</p>
+        </div>
+    </div>
+    
+    <script>
+        // Get the last modified time of the most recent file
+        fetch('blue_bombers_2025_season_stats.json')
+            .then(response => response.headers.get('last-modified'))
+            .then(lastModified => {
+                if (lastModified) {
+                    document.getElementById('lastUpdated').textContent = new Date(lastModified).toLocaleString();
+                } else {
+                    document.getElementById('lastUpdated').textContent = 'Unknown';
+                }
+            })
+            .catch(() => {
+                document.getElementById('lastUpdated').textContent = 'Unknown';
+            });
+    </script>
+</body>
+</html> 

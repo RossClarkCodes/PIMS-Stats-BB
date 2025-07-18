@@ -1,25 +1,23 @@
 {
-  "name": "blue-bombers-stats-automation",
+  "name": "blue-bombers-stats",
   "version": "1.0.0",
-  "description": "Automated Blue Bombers 2025 season stats fetcher",
-  "main": "automated-fetch.js",
+  "description": "Automated Winnipeg Blue Bombers 2025 season statistics",
+  "main": "fetch-stats.js",
   "scripts": {
-    "fetch": "node automated-fetch.js",
-    "server": "node server.js",
-    "start": "node server.js",
-    "test": "node automated-fetch.js"
+    "start": "node fetch-stats.js"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "puppeteer": "^21.0.0"
   },
-  "type": "module",
-  "engines": {
-    "node": ">=18.0.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rossclarkcodes/PIMS-Stats.git"
   },
   "keywords": [
     "cfl",
     "blue-bombers",
-    "stats",
+    "football",
+    "statistics",
     "automation"
   ],
   "author": "Your Name",
