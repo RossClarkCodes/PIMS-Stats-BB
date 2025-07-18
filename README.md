@@ -31,7 +31,7 @@ All data is available in both JSON and XML formats.
 - **Schedule**: Runs daily at 2 AM UTC
 - **Trigger**: GitHub Actions workflow
 - **Hosting**: GitHub Pages (free)
-- **URL**: `https://rossclarkcodes.github.io/PIMS-Stats/`
+- **URL**: `https://rossclarkcodes.github.io/PIMS-Stats-BB/`
 
 ## 🛠️ Setup Instructions
 
@@ -50,7 +50,7 @@ All data is available in both JSON and XML formats.
 4. **Update the repository URL** in `package.json`:
    ```json
    "repository": {
-     "url": "https://github.com/rossclarkcodes/PIMS-Stats.git"
+     "url": "https://github.com/RossClarkCodes/PIMS-Stats-BB.git"
    }
    ```
 
