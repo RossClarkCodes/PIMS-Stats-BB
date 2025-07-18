@@ -86,7 +86,7 @@ async function fetchTeamStats(team) {
 }
 
 async function fetchTeamRoster(team) {
-  const url = `https://echo.pims.cfl.ca/api/rosters/teams/pims/${team.id}`;
+  const url = `https://echo.pims.cfl.ca/api/teams/${team.id}/roster`;
   console.log(`Fetching roster for ${team.name}...`);
   
   try {
