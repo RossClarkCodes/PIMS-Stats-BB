@@ -28,65 +28,299 @@ jobs:
         node-version: '18'
         
     - name: Install dependencies
-      run: npm install puppeteer
+      run: npm install node-fetch
       
     - name: Create stats fetcher script
       run: |
         cat > fetch-stats.js << 'EOF'
-        const puppeteer = require('puppeteer');
         const fs = require('fs');
-        const path = require('path');
         
-        async function fetchStats() {
-          const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        // Utility function to make API calls with error handling
+        async function makeAPICall(url, description) {
+          try {
+            console.log(`Fetching ${description} from: ${url}`);
+            const response = await fetch(url, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+            
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log(`Successfully fetched ${description}, data type:`, typeof data);
+            return data;
+          } catch (error) {
+            console.error(`Error fetching ${description}:`, error.message);
+            throw error;
+          }
+        }
+        
+        // Filter 2025 season data
+        function filter2025Data(playerData) {
+          const filtered = { ...playerData };
+          
+          if (filtered.seasons) {
+            filtered.seasons = filtered.seasons.filter(season => season.season === 2025);
+          }
+          
+          if (filtered.fixtures) {
+            filtered.fixtures = filtered.fixtures.filter(fixture => fixture.season === 2025);
+          }
+          
+          return filtered;
+        }
+        
+        // Calculate season totals from individual games
+        function calculateSeasonTotals(games) {
+          const totals = {
+            games: games.length,
+            tackles: 0,
+            sacks: 0,
+            interceptions: 0,
+            fumblesForced: 0,
+            passesDefended: 0,
+            tacklesSolo: 0,
+            tacklesAssisted: 0,
+            fumblesRecoveries: 0,
+            touchdowns: 0,
+            carries: 0,
+            rushingYards: 0,
+            receptions: 0,
+            receivingYards: 0,
+            passesAttempted: 0,
+            passesIntercepted: 0,
+            passesSacked: 0,
+            fieldGoalsAttempted: 0,
+            fieldGoalsSucceeded: 0,
+            extraPointsAttempted: 0,
+            extraPointsSucceeded: 0,
+            punts: 0,
+            puntingYards: 0,
+            kickoffs: 0,
+            kickoffsYards: 0,
+            touchdownsPasses: 0,
+            touchdownsRushing: 0,
+            touchdownsReceptions: 0,
+            fumblesLost: 0,
+            quarterbackHits: 0,
+            safeties: 0,
+            tacklesForLoss: 0,
+            sacksForLossYards: 0,
+            interceptionsReturns: 0,
+            interceptionsReturnsYards: 0,
+            fumblesReturnsYards: 0,
+            passesRating: 0,
+            passesSucceededPercentage: 0,
+            fieldGoalsSucceededPercentage: 0,
+            puntingYardsGrossAverage: 0,
+            puntingYardsNetAverage: 0,
+            puntingInsideTwenty: 0,
+            puntingTouchbacks: 0,
+            kickoffsReturns: 0,
+            kickoffsReturnsYards: 0,
+            kickoffsReturnsYardsAverage: 0,
+            kickoffsTouchbacks: 0,
+            kickoffsInsideTwenty: 0,
+            kickoffsInsideEndZone: 0,
+            kickoffsYardsAverage: 0,
+            kickoffsYardsLongest: 0,
+            puntingYardsLongest: 0,
+            fieldGoalsYards: 0,
+            fieldGoalsSucceededYardsLongest: 0,
+            fieldGoalsMissed: 0,
+            fieldGoalsMissedReturns: 0,
+            fieldGoalsMissedReturnsYards: 0,
+            fieldGoalsMissedReturnsYardsAverage: 0,
+            fieldGoalsMissedReturnsYardsLongest: 0,
+            fieldGoalsAverageYards: 0,
+            fieldGoalsBlocked: 0,
+            defensiveFieldGoalsBlocked: 0,
+            extraPointsBlocked: 0,
+            defensiveExtraPointsBlocked: 0,
+            puntingYardsNet: 0,
+            puntingKickerReturnsYards: 0,
+            puntsBlocked: 0,
+            defensivePuntsBlocked: 0,
+            kickoffsFairCatches: 0,
+            kickoffsKickerReturnsYards: 0,
+            kickoffsOutOfBounds: 0,
+            kickoffsReturnsYardsLongest: 0,
+            puntingYardsLongest: 0,
+            passesSucceededYardsLongest: 0,
+            passesSucceededThirtyPlusYards: 0,
+            passesSackedFirstDown: 0,
+            passesSackedSecondDown: 0,
+            passesSackedThirdDown: 0,
+            passesAttemptedYardsAverage: 0,
+            touchdownsFieldGoalsReturns: 0,
+            touchdownsFumblesOwnRecovery: 0,
+            touchdownsFumblesReturn: 0,
+            touchdownsInterceptionsReturns: 0,
+            touchdownsInterceptionsReturnsYardsLongest: 0,
+            touchdownsKickoffsReturns: 0,
+            touchdownsKickoffsReturnsYardsLongest: 0,
+            touchdownsPassesYardsLongest: 0,
+            touchdownsPuntingReturns: 0,
+            touchdownsPuntingReturnsYardsLongest: 0,
+            touchdownsReceptionsYardsLongest: 0,
+            touchdownsReturns: 0,
+            touchdownsRushingYardsLongest: 0,
+            twoPointPassAttempted: 0,
+            twoPointPassSucceeded: 0,
+            twoPointReceptionAttempted: 0,
+            twoPointReceptionSucceeded: 0,
+            twoPointRushAttempted: 0,
+            twoPointRushSucceeded: 0,
+            twoPointDefensiveConversionsAttempted: 0,
+            twoPointDefensiveConversionsSucceeded: 0,
+            twoPointConversionsDefense: 0,
+            penaltiesChargedDefense: 0,
+            penaltiesChargedOffense: 0,
+            penaltiesDeclined: 0,
+            penaltiesForLossYards: 0,
+            firstDownsByPenalties: 0,
+            kneels: 0,
+            kneelsYards: 0,
+            losses: 0,
+            lossesYards: 0,
+            returnsYards: 0,
+            turnovers: 0,
+            turnoversOnDowns: 0,
+            offenseYards: 0,
+            plays: 0,
+            timeOfPossessionSeconds: 0,
+            playYardsAverage: 0,
+            hasParticipated: 0,
+            wasStarter: 0,
+            tacklesSpecialTeam: 0,
+            tacklesAssistedSpecialTeam: 0,
+            tacklesForLossYards: 0,
+            fumbles: 0,
+            fumblesOutOfBounds: 0,
+            fumblesRecoveriesFromOpponents: 0,
+            fumblesRecoveriesOwn: 0,
+            fumblesRecoveriesOwnYards: 0,
+            fumblesReturnsYardsLongest: 0,
+            interceptionsReturnsYardsLongest: 0,
+            penaltiesChargedDefense: 0,
+            penaltiesChargedOffense: 0,
+            penaltiesDeclined: 0,
+            penaltiesForLossYards: 0,
+            firstDownsByPenalties: 0
+          };
+          
+          games.forEach(game => {
+            if (game.stats) {
+              Object.keys(totals).forEach(key => {
+                if (key !== 'games' && game.stats[key] !== undefined) {
+                  totals[key] += game.stats[key];
+                }
+              });
+            }
           });
           
+          return totals;
+        }
+        
+        // Calculate team totals
+        function calculateTeamStats(allPlayers) {
+          const totals = {
+            totalPlayers: allPlayers.length,
+            totalGames: 0,
+            totalTackles: 0,
+            totalSacks: 0,
+            totalInterceptions: 0,
+            totalFumblesForced: 0,
+            totalPassesDefended: 0,
+            totalFumbleRecoveries: 0,
+            totalTouchdowns: 0,
+            totalYards: 0
+          };
+          
+          allPlayers.forEach(player => {
+            const games2025 = player.fixtures ? player.fixtures.filter(f => f.season === 2025) : [];
+            const seasonTotals = calculateSeasonTotals(games2025);
+            
+            if (seasonTotals.games > 0) {
+              totals.totalGames += seasonTotals.games;
+              totals.totalTackles += seasonTotals.tackles;
+              totals.totalSacks += seasonTotals.sacks;
+              totals.totalInterceptions += seasonTotals.interceptions;
+              totals.totalFumblesForced += seasonTotals.fumblesForced;
+              totals.totalPassesDefended += seasonTotals.passesDefended;
+              totals.totalFumbleRecoveries += seasonTotals.fumblesRecoveries;
+              totals.totalTouchdowns += seasonTotals.touchdowns;
+              totals.totalYards += seasonTotals.yards;
+            }
+          });
+          
+          return totals;
+        }
+        
+        async function fetchStats() {
           try {
-            const page = await browser.newPage();
+            console.log('Starting Blue Bombers stats fetch...');
             
-            // Load the HTML file
-            const htmlPath = path.join(__dirname, 'pims-stats.html');
-            await page.goto(`file://${htmlPath}`);
+            // Team roster URL
+            const ROSTER_URL = 'https://echo.pims.cfl.ca/api/teams/20/roster';
             
-            // Wait for the page to load
-            await page.waitForSelector('#fetchBtn', { timeout: 10000 });
+            console.log('Fetching team roster...');
+            const rosterResponse = await makeAPICall(ROSTER_URL, 'Team roster');
             
-            // Click the fetch button
-            await page.click('#fetchBtn');
+            // Handle different possible response structures
+            let rosterData = [];
+            if (Array.isArray(rosterResponse)) {
+              rosterData = rosterResponse;
+            } else if (rosterResponse && Array.isArray(rosterResponse.rosterplayers)) {
+              rosterData = rosterResponse.rosterplayers;
+            } else if (rosterResponse && Array.isArray(rosterResponse.data)) {
+              rosterData = rosterResponse.data;
+            } else {
+              console.error('Unexpected roster response structure:', rosterResponse);
+              rosterData = [];
+            }
             
-            console.log('Waiting for download area to appear...');
-            // Wait for the download area to appear (indicating completion)
-            await page.waitForSelector('#downloadArea', { timeout: 600000 }); // 10 minutes timeout
+            console.log(`Found ${rosterData.length} players in roster`);
             
-            console.log('Download area found, waiting for processing to complete...');
-            // Wait a bit more for all processing to complete
-            await page.waitForTimeout(10000);
+            // Extract player IDs from the roster
+            const rosterPlayerIds = rosterData.map(player => player.player_id || player.id || player.ID).filter(id => id);
+            console.log(`Extracted ${rosterPlayerIds.length} player IDs`);
             
-            console.log('Extracting data from page...');
+            const allPlayersData = [];
             
-            // Extract the data using page.evaluate
-            const data = await page.evaluate(() => {
-              // Get the current data from the page
-              const result = {
-                teamStats: window.teamStats || {},
-                allPlayersData: window.allPlayersData || [],
-                rosterData: window.rosterData || []
-              };
-              console.log('Data extracted:', {
-                teamStatsKeys: Object.keys(result.teamStats),
-                playersCount: result.allPlayersData.length,
-                rosterCount: result.rosterData.length
-              });
-              return result;
-            });
+            for (let i = 0; i < rosterPlayerIds.length; i++) {
+              const playerId = rosterPlayerIds[i];
+              console.log(`Fetching stats for player ${i + 1}/${rosterPlayerIds.length} (ID: ${playerId})`);
+              
+              try {
+                const playerStatsUrl = `https://echo.pims.cfl.ca/api/stats/players/pims_player/${playerId}`;
+                const playerData = await makeAPICall(playerStatsUrl, `Player ${playerId} stats`);
+                
+                // Filter to only 2025 data
+                const filtered2025Data = filter2025Data(playerData);
+                
+                if (filtered2025Data.seasons.length > 0 || filtered2025Data.fixtures.length > 0) {
+                  allPlayersData.push(filtered2025Data);
+                }
+                
+                // Small delay to prevent overwhelming the API
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+              } catch (error) {
+                console.error(`Error fetching stats for player ${playerId}:`, error.message);
+                // Continue with other players even if one fails
+              }
+            }
             
-            console.log('Data received from page:', {
-              teamStatsKeys: Object.keys(data.teamStats),
-              playersCount: data.allPlayersData.length,
-              rosterCount: data.rosterData.length
-            });
+            console.log(`Successfully fetched stats for ${allPlayersData.length} players with 2025 data`);
+            
+            // Calculate team statistics
+            const teamStats = calculateTeamStats(allPlayersData);
+            console.log('Team stats calculated:', teamStats);
             
             // Generate JSON files
             const timestamp = new Date().toISOString();
@@ -96,9 +330,9 @@ jobs:
               team: 'Winnipeg Blue Bombers',
               season: 2025,
               generatedAt: timestamp,
-              teamStats: data.teamStats,
-              roster: data.rosterData,
-              players: data.allPlayersData
+              teamStats: teamStats,
+              roster: rosterData,
+              players: allPlayersData
             };
             
             // Season stats only
@@ -106,158 +340,11 @@ jobs:
               team: 'Winnipeg Blue Bombers',
               season: 2025,
               generatedAt: timestamp,
-              teamStats: data.teamStats,
-              players: data.allPlayersData.map(playerData => {
-                const player = data.rosterData.find(p => p.player_id === playerData.player_id);
+              teamStats: teamStats,
+              players: allPlayersData.map(playerData => {
+                const player = rosterData.find(p => p.player_id === playerData.player_id);
                 const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
-                
-                // Calculate season totals
-                const seasonTotals = {
-                  games: games2025.length,
-                  tackles: 0,
-                  sacks: 0,
-                  interceptions: 0,
-                  fumblesForced: 0,
-                  passesDefended: 0,
-                  tacklesSolo: 0,
-                  tacklesAssisted: 0,
-                  fumblesRecoveries: 0,
-                  touchdowns: 0,
-                  carries: 0,
-                  rushingYards: 0,
-                  receptions: 0,
-                  receivingYards: 0,
-                  passesAttempted: 0,
-                  passesIntercepted: 0,
-                  passesSacked: 0,
-                  fieldGoalsAttempted: 0,
-                  fieldGoalsSucceeded: 0,
-                  extraPointsAttempted: 0,
-                  extraPointsSucceeded: 0,
-                  punts: 0,
-                  puntingYards: 0,
-                  kickoffs: 0,
-                  kickoffsYards: 0,
-                  touchdownsPasses: 0,
-                  touchdownsRushing: 0,
-                  touchdownsReceptions: 0,
-                  fumblesLost: 0,
-                  quarterbackHits: 0,
-                  safeties: 0,
-                  tacklesForLoss: 0,
-                  sacksForLossYards: 0,
-                  interceptionsReturns: 0,
-                  interceptionsReturnsYards: 0,
-                  fumblesReturnsYards: 0,
-                  passesRating: 0,
-                  passesSucceededPercentage: 0,
-                  fieldGoalsSucceededPercentage: 0,
-                  puntingYardsGrossAverage: 0,
-                  puntingYardsNetAverage: 0,
-                  puntingInsideTwenty: 0,
-                  puntingTouchbacks: 0,
-                  kickoffsReturns: 0,
-                  kickoffsReturnsYards: 0,
-                  kickoffsReturnsYardsAverage: 0,
-                  kickoffsTouchbacks: 0,
-                  kickoffsInsideTwenty: 0,
-                  kickoffsInsideEndZone: 0,
-                  kickoffsYardsAverage: 0,
-                  kickoffsYardsLongest: 0,
-                  puntingYardsLongest: 0,
-                  fieldGoalsYards: 0,
-                  fieldGoalsSucceededYardsLongest: 0,
-                  fieldGoalsMissed: 0,
-                  fieldGoalsMissedReturns: 0,
-                  fieldGoalsMissedReturnsYards: 0,
-                  fieldGoalsMissedReturnsYardsAverage: 0,
-                  fieldGoalsMissedReturnsYardsLongest: 0,
-                  fieldGoalsAverageYards: 0,
-                  fieldGoalsBlocked: 0,
-                  defensiveFieldGoalsBlocked: 0,
-                  extraPointsBlocked: 0,
-                  defensiveExtraPointsBlocked: 0,
-                  puntingYardsNet: 0,
-                  puntingKickerReturnsYards: 0,
-                  puntsBlocked: 0,
-                  defensivePuntsBlocked: 0,
-                  kickoffsFairCatches: 0,
-                  kickoffsKickerReturnsYards: 0,
-                  kickoffsOutOfBounds: 0,
-                  kickoffsReturnsYardsLongest: 0,
-                  puntingYardsLongest: 0,
-                  passesSucceededYardsLongest: 0,
-                  passesSucceededThirtyPlusYards: 0,
-                  passesSackedFirstDown: 0,
-                  passesSackedSecondDown: 0,
-                  passesSackedThirdDown: 0,
-                  passesAttemptedYardsAverage: 0,
-                  touchdownsFieldGoalsReturns: 0,
-                  touchdownsFumblesOwnRecovery: 0,
-                  touchdownsFumblesReturn: 0,
-                  touchdownsInterceptionsReturns: 0,
-                  touchdownsInterceptionsReturnsYardsLongest: 0,
-                  touchdownsKickoffsReturns: 0,
-                  touchdownsKickoffsReturnsYardsLongest: 0,
-                  touchdownsPassesYardsLongest: 0,
-                  touchdownsPuntingReturns: 0,
-                  touchdownsPuntingReturnsYardsLongest: 0,
-                  touchdownsReceptionsYardsLongest: 0,
-                  touchdownsReturns: 0,
-                  touchdownsRushingYardsLongest: 0,
-                  twoPointPassAttempted: 0,
-                  twoPointPassSucceeded: 0,
-                  twoPointReceptionAttempted: 0,
-                  twoPointReceptionSucceeded: 0,
-                  twoPointRushAttempted: 0,
-                  twoPointRushSucceeded: 0,
-                  twoPointDefensiveConversionsAttempted: 0,
-                  twoPointDefensiveConversionsSucceeded: 0,
-                  twoPointConversionsDefense: 0,
-                  penaltiesChargedDefense: 0,
-                  penaltiesChargedOffense: 0,
-                  penaltiesDeclined: 0,
-                  penaltiesForLossYards: 0,
-                  firstDownsByPenalties: 0,
-                  kneels: 0,
-                  kneelsYards: 0,
-                  losses: 0,
-                  lossesYards: 0,
-                  returnsYards: 0,
-                  turnovers: 0,
-                  turnoversOnDowns: 0,
-                  offenseYards: 0,
-                  plays: 0,
-                  timeOfPossessionSeconds: 0,
-                  playYardsAverage: 0,
-                  hasParticipated: 0,
-                  wasStarter: 0,
-                  tacklesSpecialTeam: 0,
-                  tacklesAssistedSpecialTeam: 0,
-                  tacklesForLossYards: 0,
-                  fumbles: 0,
-                  fumblesOutOfBounds: 0,
-                  fumblesRecoveriesFromOpponents: 0,
-                  fumblesRecoveriesOwn: 0,
-                  fumblesRecoveriesOwnYards: 0,
-                  fumblesReturnsYardsLongest: 0,
-                  interceptionsReturnsYardsLongest: 0,
-                  penaltiesChargedDefense: 0,
-                  penaltiesChargedOffense: 0,
-                  penaltiesDeclined: 0,
-                  penaltiesForLossYards: 0,
-                  firstDownsByPenalties: 0
-                };
-                
-                games2025.forEach(game => {
-                  if (game.stats) {
-                    Object.keys(seasonTotals).forEach(key => {
-                      if (key !== 'games' && game.stats[key] !== undefined) {
-                        seasonTotals[key] += game.stats[key];
-                      }
-                    });
-                  }
-                });
+                const seasonTotals = calculateSeasonTotals(games2025);
                 
                 return {
                   player_id: playerData.player_id,
@@ -280,10 +367,10 @@ jobs:
               team: 'Winnipeg Blue Bombers',
               season: 2025,
               generatedAt: timestamp,
-              teamStats: data.teamStats,
-              playerCount: data.allPlayersData.length,
-              playersWithStats: data.allPlayersData.map(playerData => {
-                const player = data.rosterData.find(p => p.player_id === playerData.player_id);
+              teamStats: teamStats,
+              playerCount: allPlayersData.length,
+              playersWithStats: allPlayersData.map(playerData => {
+                const player = rosterData.find(p => p.player_id === playerData.player_id);
                 const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
                 
                 return {
@@ -294,6 +381,13 @@ jobs:
                 };
               })
             };
+            
+            console.log('Writing files to public directory...');
+            
+            // Create public directory if it doesn't exist
+            if (!fs.existsSync('public')) {
+              fs.mkdirSync('public');
+            }
             
             // Write files
             fs.writeFileSync('public/blue_bombers_2025_complete.json', JSON.stringify(completeData, null, 2));
@@ -424,11 +518,16 @@ jobs:
             fs.writeFileSync('public/blue_bombers_2025_team_summary.xml', generateXML(teamSummaryData, 'BlueBombers2025TeamSummary'));
             
             console.log('Stats files generated successfully!');
+            console.log('Files created:');
+            console.log('- blue_bombers_2025_complete.json');
+            console.log('- blue_bombers_2025_season_stats.json');
+            console.log('- blue_bombers_2025_team_summary.json');
+            console.log('- blue_bombers_2025_complete.xml');
+            console.log('- blue_bombers_2025_season_stats.xml');
+            console.log('- blue_bombers_2025_team_summary.xml');
             
-            await browser.close();
           } catch (error) {
             console.error('Error:', error);
-            await browser.close();
           }
         }
         
