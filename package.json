@@ -1,0 +1,27 @@
+{
+  "name": "blue-bombers-stats-automation",
+  "version": "1.0.0",
+  "description": "Automated Blue Bombers 2025 season stats fetcher",
+  "main": "automated-fetch.js",
+  "scripts": {
+    "fetch": "node automated-fetch.js",
+    "server": "node server.js",
+    "start": "node server.js",
+    "test": "node automated-fetch.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "cfl",
+    "blue-bombers",
+    "stats",
+    "automation"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+} 

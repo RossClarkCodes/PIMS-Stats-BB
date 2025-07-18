@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Bombers 2025 Season Stats Fetcher</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #003366, #0066cc);
+            margin: 0;
+            padding: 20px;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .player-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .player-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .player-position {
+            background: rgba(255, 107, 53, 0.8);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .download-area {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .download-button {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            margin: 10px;
+        }
+        
+        .download-button:hover {
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        }
+        
+        .summary {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .games-list {
+            margin-top: 20px;
+        }
+        
+        .game-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .opponent {
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .game-date {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏈 Winnipeg Blue Bombers 2025 Season Stats</h1>
+        
+        <div class="controls">
+            <button id="fetchBtn" onclick="fetchAllStats()">
+                <span id="fetchText">Fetch All Player Stats</span>
+                <span id="fetchSpinner" class="spinner" style="display: none;"></span>
+            </button>
+            <button id="clearBtn" onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div id="status" class="status" style="display: none;">
+            Ready to fetch stats...
+        </div>
+        
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div id="summary" class="summary" style="display: none;">
+            <h3>Team Summary</h3>
+            <div class="summary-stats" id="summaryStats"></div>
+        </div>
+        
+        <div id="downloadArea" class="download-area" style="display: none;">
+            <h3>Download Options</h3>
+            <div style="margin-bottom: 20px;">
+                <h4>Complete Data (Roster + Stats)</h4>
+                <button class="download-button" onclick="downloadJSON()">
+                    📄 Download Complete JSON
+                </button>
+                <button class="download-button" onclick="downloadXML()">
+                    📄 Download Complete XML
+                </button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h4>Season Stats Only</h4>
+                <button class="download-button" onclick="downloadSeasonStatsJSON()">
+                    📊 Download Season Stats JSON
+                </button>
+                <button class="download-button" onclick="downloadSeasonStatsXML()">
+                    📊 Download Season Stats XML
+                </button>
+            </div>
+            <div>
+                <h4>Team Summary Only</h4>
+                <button class="download-button" onclick="downloadTeamSummaryJSON()">
+                    📈 Download Team Summary JSON
+                </button>
+                <button class="download-button" onclick="downloadTeamSummaryXML()">
+                    📈 Download Team Summary XML
+                </button>
+            </div>
+        </div>
+        
+        <div id="results" class="results"></div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        let allPlayersData = [];
+        let teamStats = {};
+        let rosterData = []; // Store roster data to map player IDs to player info
+        
+        // Team roster URL
+        const ROSTER_URL = 'https://echo.pims.cfl.ca/api/teams/20/roster';
+        
+        // CORS proxy URL (fallback if direct access fails)
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+        
+        // Utility function to make API calls with error handling
+        async function makeAPICall(url, description) {
+            try {
+                // Try direct access first
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.log(`Direct access failed for ${description}, trying CORS proxy...`);
+                
+                // Fallback to CORS proxy
+                try {
+                    const proxyUrl = CORS_PROXY + url;
+                    const proxyResponse = await fetch(proxyUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Origin': 'https://echo.pims.cfl.ca'
+                        }
+                    });
+                    
+                    if (!proxyResponse.ok) {
+                        throw new Error(`HTTP ${proxyResponse.status}: ${proxyResponse.statusText}`);
+                    }
+                    
+                    const data = await proxyResponse.json();
+                    return data;
+                } catch (proxyError) {
+                    console.error(`CORS proxy also failed for ${description}:`, proxyError);
+                    throw error; // Throw original error
+                }
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress(current, total) {
+            const percentage = (current / total) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+        
+        // Update status message
+        function updateStatus(message) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.style.display = 'block';
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        // Clear error message
+        function clearError() {
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        // Filter 2025 season data
+        function filter2025Data(playerData) {
+            const filtered = { ...playerData };
+            
+            // Filter seasons to only include 2025
+            if (filtered.seasons) {
+                filtered.seasons = filtered.seasons.filter(season => season.season === 2025);
+            }
+            
+            // Filter fixtures to only include 2025
+            if (filtered.fixtures) {
+                filtered.fixtures = filtered.fixtures.filter(fixture => fixture.season === 2025);
+            }
+            
+            return filtered;
+        }
+        
+        // Get player basic info from roster
+        function getPlayerInfo(playerId) {
+            console.log('Looking for player ID:', playerId);
+            console.log('Available roster players:', rosterData.map(p => ({ id: p.player_id, name: `${p.firstname} ${p.lastname}` })));
+            
+            // Try to match by player_id first (this is the field from roster)
+            let player = rosterData.find(p => p.player_id === playerId);
+            
+            if (!player) {
+                // Try other possible ID fields
+                player = rosterData.find(p => 
+                    p.id === playerId || 
+                    p.ID === playerId ||
+                    p.player_id === parseInt(playerId) ||
+                    p.id === parseInt(playerId) ||
+                    p.ID === parseInt(playerId)
+                );
+            }
+            
+            if (player) {
+                const playerInfo = {
+                    id: playerId,
+                    name: `${player.firstname || ''} ${player.lastname || ''}`.trim() || 'Unknown Player',
+                    position: player.position || 'N/A',
+                    jersey: player.jersey_no || 'N/A',
+                    birthdate: player.birthdate || 'N/A',
+                    height_ft: player.height_ft || 'N/A',
+                    height_in: player.height_in || 'N/A',
+                    weight_lbs: player.weight_lbs || 'N/A',
+                    college: player.college || 'N/A'
+                };
+                console.log('Found player:', playerInfo);
+                return playerInfo;
+            }
+            
+            console.log('Player not found in roster for ID:', playerId);
+            console.log('Available player_ids in roster:', rosterData.map(p => p.player_id));
+            return {
+                id: playerId,
+                name: 'Unknown Player',
+                position: 'N/A',
+                jersey: 'N/A'
+            };
+        }
+        
+        // Calculate team totals
+        function calculateTeamStats(allPlayers) {
+            const totals = {
+                totalPlayers: allPlayers.length,
+                totalGames: 0,
+                totalTackles: 0,
+                totalSacks: 0,
+                totalInterceptions: 0,
+                totalFumblesForced: 0,
+                totalPassesDefended: 0,
+                totalFumbleRecoveries: 0,
+                totalTouchdowns: 0,
+                totalYards: 0
+            };
+            
+            allPlayers.forEach(player => {
+                const games2025 = player.fixtures ? player.fixtures.filter(f => f.season === 2025) : [];
+                const seasonTotals = calculateSeasonTotals(games2025);
+                
+                if (seasonTotals.games > 0) {
+                    totals.totalGames += seasonTotals.games;
+                    totals.totalTackles += seasonTotals.tackles;
+                    totals.totalSacks += seasonTotals.sacks;
+                    totals.totalInterceptions += seasonTotals.interceptions;
+                    totals.totalFumblesForced += seasonTotals.fumblesForced;
+                    totals.totalPassesDefended += seasonTotals.passesDefended;
+                    totals.totalFumbleRecoveries += seasonTotals.fumbleRecoveries;
+                    totals.totalTouchdowns += seasonTotals.touchdowns;
+                    totals.totalYards += seasonTotals.yards;
+                } else if (player.seasons && player.seasons.length > 0) {
+                    // Fallback to season data if no individual games
+                    const season2025 = player.seasons.find(s => s.season === 2025);
+                    if (season2025) {
+                        totals.totalGames += season2025.hasParticipated || 0;
+                        totals.totalTackles += season2025.tackles || season2025.tacklesSolo || 0;
+                        totals.totalSacks += season2025.sacks || 0;
+                        totals.totalInterceptions += season2025.interceptions || 0;
+                        totals.totalFumblesForced += season2025.fumblesForced || 0;
+                        totals.totalPassesDefended += season2025.passesDefended || 0;
+                    }
+                }
+            });
+            
+            return totals;
+        }
+        
+        // Display team summary
+        function displayTeamSummary(stats) {
+            const summaryElement = document.getElementById('summaryStats');
+            summaryElement.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-label">Total Players</div>
+                    <div class="stat-value">${stats.totalPlayers}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Games</div>
+                    <div class="stat-value">${stats.totalGames}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Tackles</div>
+                    <div class="stat-value">${stats.totalTackles}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Sacks</div>
+                    <div class="stat-value">${stats.totalSacks}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Interceptions</div>
+                    <div class="stat-value">${stats.totalInterceptions}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Fumbles Forced</div>
+                    <div class="stat-value">${stats.totalFumblesForced}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Fumble Recoveries</div>
+                    <div class="stat-value">${stats.totalFumbleRecoveries}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Passes Defended</div>
+                    <div class="stat-value">${stats.totalPassesDefended}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Touchdowns</div>
+                    <div class="stat-value">${stats.totalTouchdowns}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Yards</div>
+                    <div class="stat-value">${stats.totalYards}</div>
+                </div>
+            `;
+            document.getElementById('summary').style.display = 'block';
+        }
+        
+        // Calculate season totals from individual games
+        function calculateSeasonTotals(games) {
+            const totals = {
+                games: games.length,
+                // Participation
+                hasParticipated: 0,
+                wasStarter: 0,
+                
+                // Defense stats
+                tackles: 0,
+                tacklesSolo: 0,
+                tacklesAssisted: 0,
+                tacklesSpecialTeam: 0,
+                tacklesAssistedSpecialTeam: 0,
+                tacklesForLoss: 0,
+                tacklesForLossYards: 0,
+                passesDefended: 0,
+                sacks: 0,
+                sacksForLossYards: 0,
+                safeties: 0,
+                quarterbackHits: 0,
+                
+                // Fumbles
+                fumbles: 0,
+                fumblesForced: 0,
+                fumblesLost: 0,
+                fumblesOutOfBounds: 0,
+                fumblesRecoveries: 0,
+                fumblesRecoveriesFromOpponents: 0,
+                fumblesRecoveriesOwn: 0,
+                fumblesRecoveriesOwnYards: 0,
+                fumblesReturnsYards: 0,
+                fumblesReturnsYardsLongest: 0,
+                
+                // Interceptions
+                interceptions: 0,
+                interceptionsReturns: 0,
+                interceptionsReturnsYards: 0,
+                interceptionsReturnsYardsLongest: 0,
+                
+                // Passing
+                passesAttempted: 0,
+                passesAttemptedYardsAverage: 0,
+                passesIntercepted: 0,
+                passesRating: 0,
+                passesSacked: 0,
+                passesSackedFirstDown: 0,
+                passesSackedSecondDown: 0,
+                passesSackedThirdDown: 0,
+                passesSucceededYardsLongest: 0,
+                passesSucceededPercentage: 0,
+                passesSucceededThirtyPlusYards: 0,
+                
+                // Rushing/Receiving (using generic terms for now)
+                carries: 0,
+                rushingYards: 0,
+                receptions: 0,
+                receivingYards: 0,
+                
+                // Kicking
+                fieldGoalsAttempted: 0,
+                fieldGoalsAverageYards: 0,
+                fieldGoalsBlocked: 0,
+                defensiveFieldGoalsBlocked: 0,
+                fieldGoalsYards: 0,
+                fieldGoalsMissed: 0,
+                fieldGoalsMissedReturns: 0,
+                fieldGoalsMissedReturnsYards: 0,
+                fieldGoalsMissedReturnsYardsAverage: 0,
+                fieldGoalsMissedReturnsYardsLongest: 0,
+                fieldGoalsSucceeded: 0,
+                fieldGoalsSucceededYardsLongest: 0,
+                fieldGoalsSucceededPercentage: 0,
+                
+                // Extra Points
+                extraPointsAttempted: 0,
+                extraPointsBlocked: 0,
+                defensiveExtraPointsBlocked: 0,
+                extraPointsSucceeded: 0,
+                
+                // Punting
+                punts: 0,
+                puntingYards: 0,
+                puntingYardsNet: 0,
+                puntingYardsLongest: 0,
+                puntingTouchbacks: 0,
+                puntingKickerReturnsYards: 0,
+                puntingYardsGrossAverage: 0,
+                puntingYardsNetAverage: 0,
+                puntsBlocked: 0,
+                defensivePuntsBlocked: 0,
+                puntingInsideTwenty: 0,
+                
+                // Kickoffs
+                kickoffs: 0,
+                kickoffsFairCatches: 0,
+                kickoffsYards: 0,
+                kickoffsYardsAverage: 0,
+                kickoffsYardsLongest: 0,
+                kickoffsInsideEndZone: 0,
+                kickoffsInsideTwenty: 0,
+                kickoffsKickerReturnsYards: 0,
+                kickoffsOutOfBounds: 0,
+                kickoffsTouchbacks: 0,
+                
+                // Kickoff Returns
+                kickoffsReturns: 0,
+                kickoffsReturnsYards: 0,
+                kickoffsReturnsYardsAverage: 0,
+                kickoffsReturnsYardsLongest: 0,
+                
+                // Touchdowns
+                touchdowns: 0,
+                touchdownsFieldGoalsReturns: 0,
+                touchdownsFumblesOwnRecovery: 0,
+                touchdownsFumblesReturn: 0,
+                touchdownsInterceptionsReturns: 0,
+                touchdownsInterceptionsReturnsYardsLongest: 0,
+                touchdownsKickoffsReturns: 0,
+                touchdownsKickoffsReturnsYardsLongest: 0,
+                touchdownsPasses: 0,
+                touchdownsPassesYardsLongest: 0,
+                touchdownsPuntingReturns: 0,
+                touchdownsPuntingReturnsYardsLongest: 0,
+                touchdownsReceptions: 0,
+                touchdownsReceptionsYardsLongest: 0,
+                touchdownsReturns: 0,
+                touchdownsRushing: 0,
+                touchdownsRushingYardsLongest: 0,
+                
+                // Two Point Conversions
+                twoPointPassAttempted: 0,
+                twoPointPassSucceeded: 0,
+                twoPointReceptionAttempted: 0,
+                twoPointReceptionSucceeded: 0,
+                twoPointRushAttempted: 0,
+                twoPointRushSucceeded: 0,
+                twoPointDefensiveConversionsAttempted: 0,
+                twoPointDefensiveConversionsSucceeded: 0,
+                twoPointConversionsDefense: 0,
+                
+                // Penalties
+                penaltiesChargedDefense: 0,
+                penaltiesChargedOffense: 0,
+                penaltiesDeclined: 0,
+                penaltiesForLossYards: 0,
+                firstDownsByPenalties: 0,
+                
+                // Losses
+                kneels: 0,
+                kneelsYards: 0,
+                losses: 0,
+                lossesYards: 0,
+                
+                // Returns
+                returnsYards: 0,
+                
+                // Competitor stats
+                turnovers: 0,
+                turnoversOnDowns: 0,
+                offenseYards: 0,
+                plays: 0,
+                timeOfPossessionSeconds: 0,
+                playYardsAverage: 0
+            };
+            
+            games.forEach(game => {
+                if (game.stats) {
+                    // Sum up all the stats using the exact field names
+                    Object.keys(totals).forEach(key => {
+                        if (key !== 'games' && game.stats[key] !== undefined) {
+                            totals[key] += game.stats[key];
+                        }
+                    });
+                }
+            });
+            
+            return totals;
+        }
+        
+        // Get position-specific stats display
+        function getPositionSpecificStats(seasonTotals, position) {
+            const baseStats = `
+                <div class="stat-item">
+                    <div class="stat-label">Games Played</div>
+                    <div class="stat-value">${seasonTotals.games}</div>
+                </div>
+            `;
+            
+            let positionStats = '';
+            
+            // Defensive positions
+            if (['DL', 'LB', 'DB'].includes(position)) {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Total Tackles</div>
+                        <div class="stat-value">${seasonTotals.tackles}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Solo Tackles</div>
+                        <div class="stat-value">${seasonTotals.tacklesSolo}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Assisted Tackles</div>
+                        <div class="stat-value">${seasonTotals.tacklesAssisted}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Tackles For Loss</div>
+                        <div class="stat-value">${seasonTotals.tacklesForLoss}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Sacks</div>
+                        <div class="stat-value">${seasonTotals.sacks}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Interceptions</div>
+                        <div class="stat-value">${seasonTotals.interceptions}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Fumbles Forced</div>
+                        <div class="stat-value">${seasonTotals.fumblesForced}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Fumble Recoveries</div>
+                        <div class="stat-value">${seasonTotals.fumblesRecoveries}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Passes Defended</div>
+                        <div class="stat-value">${seasonTotals.passesDefended}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Quarterback Hits</div>
+                        <div class="stat-value">${seasonTotals.quarterbackHits}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Safeties</div>
+                        <div class="stat-value">${seasonTotals.safeties}</div>
+                    </div>
+                `;
+            }
+            // Quarterbacks
+            else if (['QB'].includes(position)) {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Passes Attempted</div>
+                        <div class="stat-value">${seasonTotals.passesAttempted}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Passes Intercepted</div>
+                        <div class="stat-value">${seasonTotals.passesIntercepted}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Passes Sacked</div>
+                        <div class="stat-value">${seasonTotals.passesSacked}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Passer Rating</div>
+                        <div class="stat-value">${seasonTotals.passesRating || 0}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Carries</div>
+                        <div class="stat-value">${seasonTotals.carries}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Rushing Yards</div>
+                        <div class="stat-value">${seasonTotals.rushingYards}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Touchdowns (Pass)</div>
+                        <div class="stat-value">${seasonTotals.touchdownsPasses}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Touchdowns (Rush)</div>
+                        <div class="stat-value">${seasonTotals.touchdownsRushing}</div>
+                    </div>
+                `;
+            }
+            // Running Backs
+            else if (['RB'].includes(position)) {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Carries</div>
+                        <div class="stat-value">${seasonTotals.carries}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Rushing Yards</div>
+                        <div class="stat-value">${seasonTotals.rushingYards}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Receptions</div>
+                        <div class="stat-value">${seasonTotals.receptions}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Receiving Yards</div>
+                        <div class="stat-value">${seasonTotals.receivingYards}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Touchdowns (Rush)</div>
+                        <div class="stat-value">${seasonTotals.touchdownsRushing}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Touchdowns (Rec)</div>
+                        <div class="stat-value">${seasonTotals.touchdownsReceptions}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Fumbles Lost</div>
+                        <div class="stat-value">${seasonTotals.fumblesLost}</div>
+                    </div>
+                `;
+            }
+            // Receivers
+            else if (['WR', 'TE'].includes(position)) {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Receptions</div>
+                        <div class="stat-value">${seasonTotals.receptions}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Receiving Yards</div>
+                        <div class="stat-value">${seasonTotals.receivingYards}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Touchdowns</div>
+                        <div class="stat-value">${seasonTotals.touchdownsReceptions}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Fumbles Lost</div>
+                        <div class="stat-value">${seasonTotals.fumblesLost}</div>
+                    </div>
+                `;
+            }
+            // Kickers
+            else if (['K'].includes(position)) {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Field Goals Attempted</div>
+                        <div class="stat-value">${seasonTotals.fieldGoalsAttempted}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Field Goals Made</div>
+                        <div class="stat-value">${seasonTotals.fieldGoalsSucceeded}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Field Goal %</div>
+                        <div class="stat-value">${seasonTotals.fieldGoalsSucceededPercentage || 0}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Extra Points Attempted</div>
+                        <div class="stat-value">${seasonTotals.extraPointsAttempted}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Extra Points Made</div>
+                        <div class="stat-value">${seasonTotals.extraPointsSucceeded}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Kickoffs</div>
+                        <div class="stat-value">${seasonTotals.kickoffs}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Kickoff Yards</div>
+                        <div class="stat-value">${seasonTotals.kickoffsYards}</div>
+                    </div>
+                `;
+            }
+            // Punters
+            else if (['P'].includes(position)) {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Punts</div>
+                        <div class="stat-value">${seasonTotals.punts}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Punting Yards</div>
+                        <div class="stat-value">${seasonTotals.puntingYards}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Gross Average</div>
+                        <div class="stat-value">${seasonTotals.puntingYardsGrossAverage || 0}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Net Average</div>
+                        <div class="stat-value">${seasonTotals.puntingYardsNetAverage || 0}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Inside 20</div>
+                        <div class="stat-value">${seasonTotals.puntingInsideTwenty}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Touchbacks</div>
+                        <div class="stat-value">${seasonTotals.puntingTouchbacks}</div>
+                    </div>
+                `;
+            }
+            // Default for other positions (OL, LS, etc.)
+            else {
+                positionStats = `
+                    <div class="stat-item">
+                        <div class="stat-label">Games Played</div>
+                        <div class="stat-value">${seasonTotals.games}</div>
+                    </div>
+                `;
+            }
+            
+            return `<div class="stats-grid">${baseStats}${positionStats}</div>`;
+        }
+        
+        // Display player stats
+        function displayPlayerStats(playerData, playerInfo) {
+            const season2025 = playerData.seasons ? playerData.seasons.find(s => s.season === 2025) : null;
+            const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
+            
+            if (!season2025 && games2025.length === 0) {
+                return ''; // No 2025 data for this player
+            }
+            
+            const playerName = playerInfo.name;
+            const position = playerInfo.position; // Use position from roster instead of team abbreviation
+            
+            // Calculate season totals from individual games
+            const seasonTotals = calculateSeasonTotals(games2025);
+            
+            let statsHTML = '';
+            
+            // Show season totals (calculated from games)
+            if (games2025.length > 0) {
+                statsHTML = getPositionSpecificStats(seasonTotals, position);
+            } else if (season2025) {
+                // Fallback to season data if no individual games
+                statsHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Games</div>
+                            <div class="stat-value">${season2025.hasParticipated || 0}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Tackles</div>
+                            <div class="stat-value">${season2025.tackles || season2025.tacklesSolo || 0}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Sacks</div>
+                            <div class="stat-value">${season2025.sacks || 0}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Interceptions</div>
+                            <div class="stat-value">${season2025.interceptions || 0}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Fumbles Forced</div>
+                            <div class="stat-value">${season2025.fumblesForced || 0}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Passes Defended</div>
+                            <div class="stat-value">${season2025.passesDefended || 0}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let gamesHTML = '';
+            if (games2025.length > 0) {
+                gamesHTML = `
+                    <div class="games-list">
+                        <h4>2025 Games (${games2025.length})</h4>
+                        ${games2025.map(game => `
+                            <div class="game-item">
+                                <div class="game-header">
+                                    <span class="opponent">vs ${game.opponent_team_abbreviation}</span>
+                                    <span class="game-date">${new Date(game.start_at).toLocaleDateString()}</span>
+                                </div>
+                                <div class="stats-grid">
+                                    ${Object.entries(game.stats || {}).map(([key, value]) => `
+                                        <div class="stat-item">
+                                            <div class="stat-label">${key}</div>
+                                            <div class="stat-value">${value}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="player-card">
+                    <div class="player-header">
+                        <div class="player-name">${playerName}</div>
+                        <div class="player-position">${position}</div>
+                    </div>
+                    ${statsHTML}
+                    ${gamesHTML}
+                </div>
+            `;
+        }
+        
+        // Main function to fetch all stats
+        async function fetchAllStats() {
+            clearError();
+            clearResults();
+            
+            const fetchBtn = document.getElementById('fetchBtn');
+            const fetchText = document.getElementById('fetchText');
+            const fetchSpinner = document.getElementById('fetchSpinner');
+            
+            fetchBtn.disabled = true;
+            fetchText.style.display = 'none';
+            fetchSpinner.style.display = 'inline-block';
+            
+            document.getElementById('progressBar').style.display = 'block';
+            
+            try {
+                updateStatus('Fetching team roster...');
+                
+                // Fetch the actual roster from the API
+                const rosterResponse = await makeAPICall(ROSTER_URL, 'Team roster');
+                console.log('Roster response:', rosterResponse);
+                console.log('Roster response type:', typeof rosterResponse);
+                console.log('Is array?', Array.isArray(rosterResponse));
+                
+                // Handle different possible response structures
+                if (Array.isArray(rosterResponse)) {
+                    rosterData = rosterResponse;
+                    console.log('Using direct array structure');
+                } else if (rosterResponse && Array.isArray(rosterResponse.data)) {
+                    rosterData = rosterResponse.data;
+                    console.log('Using data wrapper structure');
+                } else if (rosterResponse && Array.isArray(rosterResponse.players)) {
+                    rosterData = rosterResponse.players;
+                    console.log('Using players wrapper structure');
+                } else if (rosterResponse && Array.isArray(rosterResponse.roster)) {
+                    rosterData = rosterResponse.roster;
+                    console.log('Using roster wrapper structure');
+                } else if (rosterResponse && Array.isArray(rosterResponse.rosterplayers)) {
+                    rosterData = rosterResponse.rosterplayers;
+                    console.log('Using rosterplayers wrapper structure');
+                } else {
+                    console.error('Unexpected roster response structure:', rosterResponse);
+                    rosterData = [];
+                }
+                
+                console.log('Processed roster data:', rosterData);
+                console.log('Roster data length:', rosterData.length);
+                
+                // Extract player IDs from the roster - use player_id field
+                const rosterPlayerIds = rosterData.map(player => player.player_id || player.id || player.ID).filter(id => id);
+                console.log('Extracted player IDs:', rosterPlayerIds);
+                
+                updateStatus(`Found ${rosterPlayerIds.length} players. Fetching individual stats...`);
+                
+                allPlayersData = [];
+                
+                for (let i = 0; i < rosterPlayerIds.length; i++) {
+                    const playerId = rosterPlayerIds[i];
+                    updateStatus(`Fetching stats for player ${i + 1}/${rosterPlayerIds.length} (ID: ${playerId})`);
+                    updateProgress(i, rosterPlayerIds.length);
+                    
+                    try {
+                        const playerStatsUrl = `https://echo.pims.cfl.ca/api/stats/players/pims_player/${playerId}`;
+                        const playerData = await makeAPICall(playerStatsUrl, `Player ${playerId} stats`);
+                        
+                        // Filter to only 2025 data
+                        const filtered2025Data = filter2025Data(playerData);
+                        
+                        if (filtered2025Data.seasons.length > 0 || filtered2025Data.fixtures.length > 0) {
+                            allPlayersData.push(filtered2025Data);
+                        }
+                        
+                        // Small delay to prevent overwhelming the API
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                    } catch (error) {
+                        console.error(`Error fetching stats for player ${playerId}:`, error);
+                        // Continue with other players even if one fails
+                    }
+                }
+                
+                updateProgress(rosterPlayerIds.length, rosterPlayerIds.length);
+                
+                // Calculate team statistics
+                teamStats = calculateTeamStats(allPlayersData);
+                
+                // Display results
+                displayResults();
+                displayTeamSummary(teamStats);
+                
+                updateStatus(`Successfully fetched stats for ${allPlayersData.length} players with 2025 data`);
+                
+                // Show download options
+                document.getElementById('downloadArea').style.display = 'block';
+                
+            } catch (error) {
+                showError(`Error fetching stats: ${error.message}`);
+                updateStatus('Error occurred while fetching stats');
+            } finally {
+                fetchBtn.disabled = false;
+                fetchText.style.display = 'inline-block';
+                fetchSpinner.style.display = 'none';
+            }
+        }
+        
+        // Display all results
+        function displayResults() {
+            const resultsElement = document.getElementById('results');
+            
+            if (allPlayersData.length === 0) {
+                resultsElement.innerHTML = '<div class="player-card">No players found with 2025 season data.</div>';
+                return;
+            }
+            
+            const playersHTML = allPlayersData.map(playerData => {
+                console.log('Player data structure:', playerData);
+                console.log('Player data ID field:', playerData.ID);
+                console.log('Player data player_id field:', playerData.player_id);
+                console.log('Player data ID type:', typeof playerData.ID);
+                
+                // Use player_id from stats API to match with roster
+                const playerInfo = getPlayerInfo(playerData.player_id);
+                return displayPlayerStats(playerData, playerInfo);
+            }).filter(html => html !== '').join('');
+            
+            resultsElement.innerHTML = playersHTML;
+        }
+        
+        // Clear all results
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary').style.display = 'none';
+            document.getElementById('downloadArea').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('status').style.display = 'none';
+            clearError();
+            allPlayersData = [];
+            teamStats = {};
+            rosterData = [];
+        }
+        
+        // Download as JSON
+        function downloadJSON() {
+            const data = {
+                team: 'Winnipeg Blue Bombers',
+                season: 2025,
+                generatedAt: new Date().toISOString(),
+                teamStats: teamStats,
+                roster: rosterData,
+                players: allPlayersData
+            };
+            
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blue_bombers_2025_stats.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Download as XML
+        function downloadXML() {
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            xml += '<BlueBombers2025Stats>\n';
+            xml += '  <Team>Winnipeg Blue Bombers</Team>\n';
+            xml += '  <Season>2025</Season>\n';
+            xml += `  <GeneratedAt>${new Date().toISOString()}</GeneratedAt>\n`;
+            
+            // Team stats
+            xml += '  <TeamStats>\n';
+            Object.entries(teamStats).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
+            });
+            xml += '  </TeamStats>\n';
+            
+            // Roster
+            xml += '  <Roster>\n';
+            rosterData.forEach(player => {
+                xml += '    <RosterPlayer>\n';
+                Object.entries(player).forEach(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                        xml += `      <${key}>\n`;
+                        Object.entries(value).forEach(([subKey, subValue]) => {
+                            xml += `        <${subKey}>${subValue}</${subKey}>\n`;
+                        });
+                        xml += `      </${key}>\n`;
+                    } else {
+                        xml += `      <${key}>${value}</${key}>\n`;
+                    }
+                });
+                xml += '    </RosterPlayer>\n';
+            });
+            xml += '  </Roster>\n';
+            
+            // Players
+            xml += '  <Players>\n';
+            allPlayersData.forEach(player => {
+                xml += '    <Player>\n';
+                xml += `      <ID>${player.ID}</ID>\n`;
+                
+                // Seasons
+                if (player.seasons && player.seasons.length > 0) {
+                    xml += '      <Seasons>\n';
+                    player.seasons.forEach(season => {
+                        xml += '        <Season>\n';
+                        Object.entries(season).forEach(([key, value]) => {
+                            xml += `          <${key}>${value}</${key}>\n`;
+                        });
+                        xml += '        </Season>\n';
+                    });
+                    xml += '      </Seasons>\n';
+                }
+                
+                // Fixtures
+                if (player.fixtures && player.fixtures.length > 0) {
+                    xml += '      <Fixtures>\n';
+                    player.fixtures.forEach(fixture => {
+                        xml += '        <Fixture>\n';
+                        Object.entries(fixture).forEach(([key, value]) => {
+                            if (key === 'stats' && typeof value === 'object') {
+                                xml += '          <Stats>\n';
+                                Object.entries(value).forEach(([statKey, statValue]) => {
+                                    xml += `            <${statKey}>${statValue}</${statKey}>\n`;
+                                });
+                                xml += '          </Stats>\n';
+                            } else {
+                                xml += `          <${key}>${value}</${key}>\n`;
+                            }
+                        });
+                        xml += '        </Fixture>\n';
+                    });
+                    xml += '      </Fixtures>\n';
+                }
+                
+                xml += '    </Player>\n';
+            });
+            xml += '  </Players>\n';
+            xml += '</BlueBombers2025Stats>';
+            
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blue_bombers_2025_stats.xml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Download Season Stats Only (JSON)
+        function downloadSeasonStatsJSON() {
+            const seasonStatsData = {
+                team: 'Winnipeg Blue Bombers',
+                season: 2025,
+                generatedAt: new Date().toISOString(),
+                teamStats: teamStats,
+                players: allPlayersData.map(playerData => {
+                    const playerInfo = getPlayerInfo(playerData.player_id);
+                    const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
+                    const seasonTotals = calculateSeasonTotals(games2025);
+                    
+                    return {
+                        player_id: playerData.player_id,
+                        name: playerInfo.name,
+                        position: playerInfo.position,
+                        jersey: playerInfo.jersey,
+                        birthdate: playerInfo.birthdate,
+                        height_ft: playerInfo.height_ft,
+                        height_in: playerInfo.height_in,
+                        weight_lbs: playerInfo.weight_lbs,
+                        college: playerInfo.college,
+                        gamesPlayed: seasonTotals.games,
+                        seasonTotals: seasonTotals
+                    };
+                })
+            };
+            
+            const jsonString = JSON.stringify(seasonStatsData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blue_bombers_2025_season_stats.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Download Season Stats Only (XML)
+        function downloadSeasonStatsXML() {
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            xml += '<BlueBombers2025SeasonStats>\n';
+            xml += '  <Team>Winnipeg Blue Bombers</Team>\n';
+            xml += '  <Season>2025</Season>\n';
+            xml += `  <GeneratedAt>${new Date().toISOString()}</GeneratedAt>\n`;
+            
+            // Team stats
+            xml += '  <TeamStats>\n';
+            Object.entries(teamStats).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
+            });
+            xml += '  </TeamStats>\n';
+            
+            // Players with season stats
+            xml += '  <Players>\n';
+            allPlayersData.forEach(playerData => {
+                const playerInfo = getPlayerInfo(playerData.player_id);
+                const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
+                const seasonTotals = calculateSeasonTotals(games2025);
+                
+                xml += '    <Player>\n';
+                xml += `      <PlayerID>${playerData.player_id}</PlayerID>\n`;
+                xml += `      <Name>${playerInfo.name}</Name>\n`;
+                xml += `      <Position>${playerInfo.position}</Position>\n`;
+                xml += `      <Jersey>${playerInfo.jersey}</Jersey>\n`;
+                xml += `      <Birthdate>${playerInfo.birthdate}</Birthdate>\n`;
+                xml += `      <HeightFt>${playerInfo.height_ft}</HeightFt>\n`;
+                xml += `      <HeightIn>${playerInfo.height_in}</HeightIn>\n`;
+                xml += `      <WeightLbs>${playerInfo.weight_lbs}</WeightLbs>\n`;
+                xml += `      <College>${playerInfo.college}</College>\n`;
+                xml += `      <GamesPlayed>${seasonTotals.games}</GamesPlayed>\n`;
+                
+                // Season totals
+                xml += '      <SeasonTotals>\n';
+                Object.entries(seasonTotals).forEach(([key, value]) => {
+                    if (key !== 'games') { // Skip games since we already have GamesPlayed
+                        xml += `        <${key}>${value}</${key}>\n`;
+                    }
+                });
+                xml += '      </SeasonTotals>\n';
+                
+
+                
+                xml += '    </Player>\n';
+            });
+            xml += '  </Players>\n';
+            xml += '</BlueBombers2025SeasonStats>';
+            
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blue_bombers_2025_season_stats.xml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Download Team Summary Only (JSON)
+        function downloadTeamSummaryJSON() {
+            const teamSummaryData = {
+                team: 'Winnipeg Blue Bombers',
+                season: 2025,
+                generatedAt: new Date().toISOString(),
+                teamStats: teamStats,
+                playerCount: allPlayersData.length,
+                playersWithStats: allPlayersData.map(playerData => {
+                    const playerInfo = getPlayerInfo(playerData.player_id);
+                    const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
+                    const seasonTotals = calculateSeasonTotals(games2025);
+                    
+                    return {
+                        name: playerInfo.name,
+                        position: playerInfo.position,
+                        jersey: playerInfo.jersey,
+                        gamesPlayed: seasonTotals.games
+                    };
+                })
+            };
+            
+            const jsonString = JSON.stringify(teamSummaryData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blue_bombers_2025_team_summary.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Download Team Summary Only (XML)
+        function downloadTeamSummaryXML() {
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            xml += '<BlueBombers2025TeamSummary>\n';
+            xml += '  <Team>Winnipeg Blue Bombers</Team>\n';
+            xml += '  <Season>2025</Season>\n';
+            xml += `  <GeneratedAt>${new Date().toISOString()}</GeneratedAt>\n`;
+            xml += `  <PlayerCount>${allPlayersData.length}</PlayerCount>\n`;
+            
+            // Team stats
+            xml += '  <TeamStats>\n';
+            Object.entries(teamStats).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
+            });
+            xml += '  </TeamStats>\n';
+            
+            // Players summary
+            xml += '  <Players>\n';
+            allPlayersData.forEach(playerData => {
+                const playerInfo = getPlayerInfo(playerData.player_id);
+                const games2025 = playerData.fixtures ? playerData.fixtures.filter(f => f.season === 2025) : [];
+                const seasonTotals = calculateSeasonTotals(games2025);
+                
+                xml += '    <Player>\n';
+                xml += `      <Name>${playerInfo.name}</Name>\n`;
+                xml += `      <Position>${playerInfo.position}</Position>\n`;
+                xml += `      <Jersey>${playerInfo.jersey}</Jersey>\n`;
+                xml += `      <GamesPlayed>${seasonTotals.games}</GamesPlayed>\n`;
+                xml += '    </Player>\n';
+            });
+            xml += '  </Players>\n';
+            xml += '</BlueBombers2025TeamSummary>';
+            
+            const blob = new Blob([xml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'blue_bombers_2025_team_summary.xml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('Ready to fetch Blue Bombers 2025 season stats');
+        });
+    </script>
+</body>
+</html>
