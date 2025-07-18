@@ -1,0 +1,28 @@
+name: Daily Blue Bombers Stats Update (Simple)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Create test file
+      run: |
+        echo "Testing GitHub Actions" > public/test.txt
+        echo "If you see this, Actions is working!" >> public/test.txt
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public 
