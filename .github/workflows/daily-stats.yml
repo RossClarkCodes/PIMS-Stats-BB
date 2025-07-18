@@ -16,12 +16,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  fetch-stats:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -102,7 +98,6 @@ jobs:
                 // Calculate season totals
                 const seasonTotals = {
                   games: games2025.length,
-                  // Add all the stats calculations here
                   tackles: 0,
                   sacks: 0,
                   interceptions: 0,
@@ -284,144 +279,141 @@ jobs:
               })
             };
             
-            return {
-              completeData,
-              seasonStatsData,
-              teamSummaryData
-            };
-          });
-          
-          // Write files
-          fs.writeFileSync('public/blue_bombers_2025_complete.json', JSON.stringify(data.completeData, null, 2));
-          fs.writeFileSync('public/blue_bombers_2025_season_stats.json', JSON.stringify(data.seasonStatsData, null, 2));
-          fs.writeFileSync('public/blue_bombers_2025_team_summary.json', JSON.stringify(data.teamSummaryData, null, 2));
-          
-          // Generate XML files
-          const generateXML = (data, rootElement) => {
-            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-            xml += `<${rootElement}>\n`;
-            xml += `  <Team>${data.team}</Team>\n`;
-            xml += `  <Season>${data.season}</Season>\n`;
-            xml += `  <GeneratedAt>${data.generatedAt}</GeneratedAt>\n`;
+            // Write files
+            fs.writeFileSync('public/blue_bombers_2025_complete.json', JSON.stringify(completeData, null, 2));
+            fs.writeFileSync('public/blue_bombers_2025_season_stats.json', JSON.stringify(seasonStatsData, null, 2));
+            fs.writeFileSync('public/blue_bombers_2025_team_summary.json', JSON.stringify(teamSummaryData, null, 2));
             
-            if (data.playerCount) {
-              xml += `  <PlayerCount>${data.playerCount}</PlayerCount>\n`;
-            }
-            
-            // Team stats
-            xml += '  <TeamStats>\n';
-            Object.entries(data.teamStats).forEach(([key, value]) => {
-              xml += `    <${key}>${value}</${key}>\n`;
-            });
-            xml += '  </TeamStats>\n';
-            
-            // Roster (if complete data)
-            if (data.roster) {
-              xml += '  <Roster>\n';
-              data.roster.forEach(player => {
-                xml += '    <RosterPlayer>\n';
-                Object.entries(player).forEach(([key, value]) => {
-                  if (typeof value === 'object' && value !== null) {
-                    xml += `      <${key}>\n`;
-                    Object.entries(value).forEach(([subKey, subValue]) => {
-                      xml += `        <${subKey}>${subValue}</${subKey}>\n`;
-                    });
-                    xml += `      </${key}>\n`;
-                  } else {
-                    xml += `      <${key}>${value}</${key}>\n`;
-                  }
-                });
-                xml += '    </RosterPlayer>\n';
+            // Generate XML files
+            const generateXML = (data, rootElement) => {
+              let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+              xml += `<${rootElement}>\n`;
+              xml += `  <Team>${data.team}</Team>\n`;
+              xml += `  <Season>${data.season}</Season>\n`;
+              xml += `  <GeneratedAt>${data.generatedAt}</GeneratedAt>\n`;
+              
+              if (data.playerCount) {
+                xml += `  <PlayerCount>${data.playerCount}</PlayerCount>\n`;
+              }
+              
+              // Team stats
+              xml += '  <TeamStats>\n';
+              Object.entries(data.teamStats).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
               });
-              xml += '  </Roster>\n';
-            }
-            
-            // Players
-            if (data.players) {
-              xml += '  <Players>\n';
-              data.players.forEach(player => {
-                xml += '    <Player>\n';
-                
-                if (player.player_id) {
-                  xml += `      <PlayerID>${player.player_id}</PlayerID>\n`;
-                  xml += `      <Name>${player.name}</Name>\n`;
-                  xml += `      <Position>${player.position}</Position>\n`;
-                  xml += `      <Jersey>${player.jersey}</Jersey>\n`;
-                  
-                  if (player.birthdate) {
-                    xml += `      <Birthdate>${player.birthdate}</Birthdate>\n`;
-                    xml += `      <HeightFt>${player.height_ft}</HeightFt>\n`;
-                    xml += `      <HeightIn>${player.height_in}</HeightIn>\n`;
-                    xml += `      <WeightLbs>${player.weight_lbs}</WeightLbs>\n`;
-                    xml += `      <College>${player.college}</College>\n`;
-                  }
-                  
-                  if (player.gamesPlayed !== undefined) {
-                    xml += `      <GamesPlayed>${player.gamesPlayed}</GamesPlayed>\n`;
-                  }
-                  
-                  if (player.seasonTotals) {
-                    xml += '      <SeasonTotals>\n';
-                    Object.entries(player.seasonTotals).forEach(([key, value]) => {
-                      if (key !== 'games') {
-                        xml += `        <${key}>${value}</${key}>\n`;
-                      }
-                    });
-                    xml += '      </SeasonTotals>\n';
-                  }
-                } else {
-                  // Complete data format
-                  xml += `      <ID>${player.ID}</ID>\n`;
-                  
-                  if (player.seasons && player.seasons.length > 0) {
-                    xml += '      <Seasons>\n';
-                    player.seasons.forEach(season => {
-                      xml += '        <Season>\n';
-                      Object.entries(season).forEach(([key, value]) => {
-                        xml += `          <${key}>${value}</${key}>\n`;
+              xml += '  </TeamStats>\n';
+              
+              // Roster (if complete data)
+              if (data.roster) {
+                xml += '  <Roster>\n';
+                data.roster.forEach(player => {
+                  xml += '    <RosterPlayer>\n';
+                  Object.entries(player).forEach(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                      xml += `      <${key}>\n`;
+                      Object.entries(value).forEach(([subKey, subValue]) => {
+                        xml += `        <${subKey}>${subValue}</${subKey}>\n`;
                       });
-                      xml += '        </Season>\n';
-                    });
-                    xml += '      </Seasons>\n';
-                  }
+                      xml += `      </${key}>\n`;
+                    } else {
+                      xml += `      <${key}>${value}</${key}>\n`;
+                    }
+                  });
+                  xml += '    </RosterPlayer>\n';
+                });
+                xml += '  </Roster>\n';
+              }
+              
+              // Players
+              if (data.players) {
+                xml += '  <Players>\n';
+                data.players.forEach(player => {
+                  xml += '    <Player>\n';
                   
-                  if (player.fixtures && player.fixtures.length > 0) {
-                    xml += '      <Fixtures>\n';
-                    player.fixtures.forEach(fixture => {
-                      xml += '        <Fixture>\n';
-                      Object.entries(fixture).forEach(([key, value]) => {
-                        if (key === 'stats' && typeof value === 'object') {
-                          xml += '          <Stats>\n';
-                          Object.entries(value).forEach(([statKey, statValue]) => {
-                            xml += `            <${statKey}>${statValue}</${statKey}>\n`;
-                          });
-                          xml += '          </Stats>\n';
-                        } else {
-                          xml += `          <${key}>${value}</${key}>\n`;
+                  if (player.player_id) {
+                    xml += `      <PlayerID>${player.player_id}</PlayerID>\n`;
+                    xml += `      <Name>${player.name}</Name>\n`;
+                    xml += `      <Position>${player.position}</Position>\n`;
+                    xml += `      <Jersey>${player.jersey}</Jersey>\n`;
+                    
+                    if (player.birthdate) {
+                      xml += `      <Birthdate>${player.birthdate}</Birthdate>\n`;
+                      xml += `      <HeightFt>${player.height_ft}</HeightFt>\n`;
+                      xml += `      <HeightIn>${player.height_in}</HeightIn>\n`;
+                      xml += `      <WeightLbs>${player.weight_lbs}</WeightLbs>\n`;
+                      xml += `      <College>${player.college}</College>\n`;
+                    }
+                    
+                    if (player.gamesPlayed !== undefined) {
+                      xml += `      <GamesPlayed>${player.gamesPlayed}</GamesPlayed>\n`;
+                    }
+                    
+                    if (player.seasonTotals) {
+                      xml += '      <SeasonTotals>\n';
+                      Object.entries(player.seasonTotals).forEach(([key, value]) => {
+                        if (key !== 'games') {
+                          xml += `        <${key}>${value}</${key}>\n`;
                         }
                       });
-                      xml += '        </Fixture>\n';
-                    });
-                    xml += '      </Fixtures>\n';
+                      xml += '      </SeasonTotals>\n';
+                    }
+                  } else {
+                    // Complete data format
+                    xml += `      <ID>${player.ID}</ID>\n`;
+                    
+                    if (player.seasons && player.seasons.length > 0) {
+                      xml += '      <Seasons>\n';
+                      player.seasons.forEach(season => {
+                        xml += '        <Season>\n';
+                        Object.entries(season).forEach(([key, value]) => {
+                          xml += `          <${key}>${value}</${key}>\n`;
+                        });
+                        xml += '        </Season>\n';
+                      });
+                      xml += '      </Seasons>\n';
+                    }
+                    
+                    if (player.fixtures && player.fixtures.length > 0) {
+                      xml += '      <Fixtures>\n';
+                      player.fixtures.forEach(fixture => {
+                        xml += '        <Fixture>\n';
+                        Object.entries(fixture).forEach(([key, value]) => {
+                          if (key === 'stats' && typeof value === 'object') {
+                            xml += '          <Stats>\n';
+                            Object.entries(value).forEach(([statKey, statValue]) => {
+                              xml += `            <${statKey}>${statValue}</${statKey}>\n`;
+                            });
+                            xml += '          </Stats>\n';
+                          } else {
+                            xml += `          <${key}>${value}</${key}>\n`;
+                          }
+                        });
+                        xml += '        </Fixture>\n';
+                      });
+                      xml += '      </Fixtures>\n';
+                    }
                   }
-                }
-                
-                xml += '    </Player>\n';
-              });
-              xml += '  </Players>\n';
-            }
+                  
+                  xml += '    </Player>\n';
+                });
+                xml += '  </Players>\n';
+              }
+              
+              xml += `</${rootElement}>`;
+              return xml;
+            };
             
-            xml += `</${rootElement}>`;
-            return xml;
-          };
-          
-          fs.writeFileSync('public/blue_bombers_2025_complete.xml', generateXML(data.completeData, 'BlueBombers2025Stats'));
-          fs.writeFileSync('public/blue_bombers_2025_season_stats.xml', generateXML(data.seasonStatsData, 'BlueBombers2025SeasonStats'));
-          fs.writeFileSync('public/blue_bombers_2025_team_summary.xml', generateXML(data.teamSummaryData, 'BlueBombers2025TeamSummary'));
-          
-          console.log('Stats files generated successfully!');
-          
-          await browser.close();
+            fs.writeFileSync('public/blue_bombers_2025_complete.xml', generateXML(completeData, 'BlueBombers2025Stats'));
+            fs.writeFileSync('public/blue_bombers_2025_season_stats.xml', generateXML(seasonStatsData, 'BlueBombers2025SeasonStats'));
+            fs.writeFileSync('public/blue_bombers_2025_team_summary.xml', generateXML(teamSummaryData, 'BlueBombers2025TeamSummary'));
+            
+            console.log('Stats files generated successfully!');
+            
+            await browser.close();
+          } catch (error) {
+            console.error('Error:', error);
+            await browser.close();
+          }
         }
         
         fetchStats().catch(console.error);
@@ -441,6 +433,13 @@ jobs:
       with:
         path: './public'
         
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4 
