@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CFL Teams 2025 Stats</title>
+    <title>CFL Teams & Players 2025 Stats</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,7 +15,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -65,6 +65,14 @@
             box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
         }
         
+        .file-link.player {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+        
+        .file-link.player:hover {
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        }
+        
         .last-updated {
             text-align: center;
             margin-top: 30px;
@@ -94,11 +102,19 @@
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+        
+        .stats-summary {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏈 CFL Teams 2025 Stats</h1>
+        <h1>🏈 CFL Teams & Players 2025 Stats</h1>
         
         <div class="file-section">
             <h3>All Teams 2025 Season Stats</h3>
@@ -116,6 +132,28 @@
             </div>
         </div>
         
+        <div class="file-section">
+            <h3>All Players 2025 Individual Stats</h3>
+            <div class="stats-summary">
+                <strong>Includes:</strong> Roster data, player details, and individual 2025 season statistics for all CFL players
+            </div>
+            <div class="file-links">
+                <a href="all_players_2025_stats.json" class="file-link player">👥 All Players JSON</a>
+                <a href="all_players_2025_stats.xml" class="file-link player">👥 All Players XML</a>
+            </div>
+        </div>
+        
+        <div class="file-section">
+            <h3>Winnipeg Blue Bombers 2025 Player Stats</h3>
+            <div class="stats-summary">
+                <strong>Includes:</strong> Complete roster with player details and individual 2025 season statistics for Blue Bombers players
+            </div>
+            <div class="file-links">
+                <a href="wpg_players_2025_stats.json" class="file-link player">💙 Bombers Players JSON</a>
+                <a href="wpg_players_2025_stats.xml" class="file-link player">💙 Bombers Players XML</a>
+            </div>
+        </div>
+        
         <div class="last-updated">
             <p><span class="status-indicator status-online" id="statusIndicator"></span>Status: <span id="statusText">Checking...</span></p>
             <p>Last updated: <span id="lastUpdated">Checking...</span></p>
@@ -128,7 +166,9 @@
         async function checkFileStatus() {
             const files = [
                 'all_teams_2025_stats.json',
-                'team_wpg_2025_stats.json'
+                'team_wpg_2025_stats.json',
+                'all_players_2025_stats.json',
+                'wpg_players_2025_stats.json'
             ];
             
             let accessibleCount = 0;

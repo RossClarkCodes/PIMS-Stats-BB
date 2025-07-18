@@ -1,4 +1,4 @@
-name: Daily Blue Bombers Stats Update
+name: Daily CFL Stats Update
 
 on:
   schedule:
@@ -30,8 +30,8 @@ jobs:
     - name: Create public directory
       run: mkdir -p public
       
-    - name: Fetch and write all team stats
-      run: node fetch-team-stats.js
+    - name: Fetch and write all stats (teams + players)
+      run: node fetch-complete-stats.js
       
     - name: Copy landing page
       run: cp public/index.html public/index.html.bak 2>/dev/null || true
@@ -39,7 +39,7 @@ jobs:
     - name: Validate generated files
       run: |
         echo "Checking for required files..."
-        required_files=("all_teams_2025_stats.json" "team_wpg_2025_stats.json" "all_teams_2025_stats.xml" "team_wpg_2025_stats.xml")
+        required_files=("all_teams_2025_stats.json" "team_wpg_2025_stats.json" "all_teams_2025_stats.xml" "team_wpg_2025_stats.xml" "all_players_2025_stats.json" "wpg_players_2025_stats.json")
         missing_files=()
         
         for file in "${required_files[@]}"; do
