@@ -7,165 +7,177 @@
   <Stats>
     <season_id>34</season_id>
     <season>2025</season>
-    <driveGoalToGoAttempted>3</driveGoalToGoAttempted>
+    <driveGoalToGoAttempted>6</driveGoalToGoAttempted>
     <team_id>20</team_id>
     <team_abbreviation>WPG</team_abbreviation>
     <opponent_team_id>1</opponent_team_id>
     <opponent_team_abbreviation>BC</opponent_team_abbreviation>
-    <driveGoalToGoSucceeded>3</driveGoalToGoSucceeded>
-    <driveInsideTwentyAttempted>10</driveInsideTwentyAttempted>
-    <driveInsideTwentySucceeded>7</driveInsideTwentySucceeded>
+    <driveGoalToGoSucceeded>5</driveGoalToGoSucceeded>
+    <driveInsideTwentyAttempted>20</driveInsideTwentyAttempted>
+    <driveInsideTwentySucceeded>12</driveInsideTwentySucceeded>
     <driveInsideTwentySucceededPercentage>null</driveInsideTwentySucceededPercentage>
-    <drives>55</drives>
-    <extraPointsAttempted>12</extraPointsAttempted>
-    <extraPointsSucceeded>10</extraPointsSucceeded>
-    <fieldGoalsAttempted>11</fieldGoalsAttempted>
+    <drives>107</drives>
+    <extraPointsAttempted>22</extraPointsAttempted>
+    <extraPointsSucceeded>20</extraPointsSucceeded>
+    <fieldGoalsAttempted>23</fieldGoalsAttempted>
     <fieldGoalsAverageYards>null</fieldGoalsAverageYards>
-    <fieldGoalsMissed>1</fieldGoalsMissed>
-    <fieldGoalsSucceeded>10</fieldGoalsSucceeded>
+    <fieldGoalsMissed>2</fieldGoalsMissed>
+    <fieldGoalsSucceeded>21</fieldGoalsSucceeded>
     <fieldGoalsSucceededPercentage>null</fieldGoalsSucceededPercentage>
-    <fieldGoalsSucceededYardsLongest>55</fieldGoalsSucceededYardsLongest>
-    <fieldGoalsYards>350</fieldGoalsYards>
-    <firstDowns>87</firstDowns>
-    <firstDownsAttempted>129</firstDownsAttempted>
-    <firstDownsByPenalties>3</firstDownsByPenalties>
-    <firstDownsConversions>33</firstDownsConversions>
+    <fieldGoalsSucceededYardsLongest>63</fieldGoalsSucceededYardsLongest>
+    <fieldGoalsYards>855</fieldGoalsYards>
+    <firstDowns>161</firstDowns>
+    <firstDownsAttempted>247</firstDownsAttempted>
+    <firstDownsByPenalties>9</firstDownsByPenalties>
+    <firstDownsConversions>57</firstDownsConversions>
     <firstDownsConversionsPercentage>null</firstDownsConversionsPercentage>
-    <firstDownsPassing>52</firstDownsPassing>
-    <firstDownsRushing>31</firstDownsRushing>
-    <firstDownsYards>887</firstDownsYards>
-    <firstDownsYardsAverage>27.137719999999998</firstDownsYardsAverage>
-    <fumblesForced>3</fumblesForced>
-    <fumblesRecoveriesFromOpponents>5</fumblesRecoveriesFromOpponents>
-    <fumblesReturnsYards>-57</fumblesReturnsYards>
-    <fumblesReturnsYardsLongest>0</fumblesReturnsYardsLongest>
-    <interceptions>4</interceptions>
-    <interceptionsReturns>4</interceptionsReturns>
-    <interceptionsReturnsYards>20</interceptionsReturnsYards>
+    <firstDownsPassing>86</firstDownsPassing>
+    <firstDownsRushing>67</firstDownsRushing>
+    <firstDownsYards>1554</firstDownsYards>
+    <firstDownsYardsAverage>49.589059999999996</firstDownsYardsAverage>
+    <fumblesForced>5</fumblesForced>
+    <fumblesRecoveriesFromOpponents>7</fumblesRecoveriesFromOpponents>
+    <fumblesReturnsYards>0</fumblesReturnsYards>
+    <fumblesReturnsYardsLongest>29</fumblesReturnsYardsLongest>
+    <interceptions>6</interceptions>
+    <interceptionsReturns>6</interceptionsReturns>
+    <interceptionsReturnsYards>54</interceptionsReturnsYards>
     <interceptionsReturnsYardsLongest>19</interceptionsReturnsYardsLongest>
-    <kickoffs>18</kickoffs>
-    <kickoffsKickerReturnsYards>347</kickoffsKickerReturnsYards>
-    <kickoffsReturns>12</kickoffsReturns>
-    <kickoffsReturnsYards>260</kickoffsReturnsYards>
+    <kickoffs>34</kickoffs>
+    <kickoffsKickerReturnsYards>658</kickoffsKickerReturnsYards>
+    <kickoffsReturns>27</kickoffsReturns>
+    <kickoffsReturnsYards>577</kickoffsReturnsYards>
     <kickoffsReturnsYardsAverage>null</kickoffsReturnsYardsAverage>
-    <kickoffsReturnsYardsLongest>41</kickoffsReturnsYardsLongest>
-    <kickoffsYards>1207</kickoffsYards>
+    <kickoffsReturnsYardsLongest>93</kickoffsReturnsYardsLongest>
+    <kickoffsYards>2346</kickoffsYards>
     <kickoffsYardsAverage>null</kickoffsYardsAverage>
-    <kickoffsYardsLongest>75</kickoffsYardsLongest>
-    <kneels>7</kneels>
-    <kneelsFirstDown>2</kneelsFirstDown>
+    <kickoffsYardsLongest>100</kickoffsYardsLongest>
+    <kneels>9</kneels>
+    <kneelsFirstDown>3</kneelsFirstDown>
     <kneelsSecondDown>3</kneelsSecondDown>
-    <kneelsYards>7</kneelsYards>
+    <kneelsYards>9</kneelsYards>
     <largestLead>21</largestLead>
-    <losses>11</losses>
-    <lossesYards>-26</lossesYards>
-    <offenseYards>1522</offenseYards>
-    <passesAttempted>134</passesAttempted>
+    <losses>27</losses>
+    <lossesYards>-113</lossesYards>
+    <offenseYards>2816</offenseYards>
+    <passesAttempted>246</passesAttempted>
     <passesAttemptedYardsAverage>null</passesAttemptedYardsAverage>
-    <passesIntercepted>5</passesIntercepted>
-    <passesRating>433.70329000000004</passesRating>
-    <passesSacked>4</passesSacked>
-    <passesSackedLostYards>19</passesSackedLostYards>
-    <passesSackedSecondDown>3</passesSackedSecondDown>
-    <passesSucceeded>97</passesSucceeded>
+    <passesIntercepted>14</passesIntercepted>
+    <passesRating>722.4158100000001</passesRating>
+    <passesSacked>17</passesSacked>
+    <passesSackedLostYards>90</passesSackedLostYards>
+    <passesSackedSecondDown>14</passesSackedSecondDown>
+    <passesSucceeded>176</passesSucceeded>
     <passesSucceededPercentage>null</passesSucceededPercentage>
-    <passesSucceededThirtyPlusYards>7</passesSucceededThirtyPlusYards>
-    <passesSucceededYards>1075</passesSucceededYards>
+    <passesSucceededThirtyPlusYards>11</passesSucceededThirtyPlusYards>
+    <passesSucceededYards>1978</passesSucceededYards>
     <passesSucceededYardsAverage>null</passesSucceededYardsAverage>
-    <passesSucceededYardsLongest>60</passesSucceededYardsLongest>
-    <penaltiesChargedDefense>12</penaltiesChargedDefense>
-    <penaltiesChargedOffense>7</penaltiesChargedOffense>
-    <penaltiesForLossYards>183</penaltiesForLossYards>
-    <plays>238</plays>
+    <passesSucceededYardsLongest>73</passesSucceededYardsLongest>
+    <penaltiesChargedDefense>25</penaltiesChargedDefense>
+    <penaltiesChargedOffense>18</penaltiesChargedOffense>
+    <penaltiesForLossYards>448</penaltiesForLossYards>
+    <plays>461</plays>
     <playYardsAverage>null</playYardsAverage>
-    <pointsAllowed>94</pointsAllowed>
-    <pointsAllowedFirstQuarter>25</pointsAllowedFirstQuarter>
-    <pointsAllowedSecondQuarter>30</pointsAllowedSecondQuarter>
-    <pointsAllowedThirdQuarter>23</pointsAllowedThirdQuarter>
-    <pointsScored>113</pointsScored>
-    <pointsScoredFirstQuarter>26</pointsScoredFirstQuarter>
-    <pointsScoredFourthQuarter>33</pointsScoredFourthQuarter>
-    <pointsScoredSecondQuarter>38</pointsScoredSecondQuarter>
-    <pointsScoredThirdQuarter>16</pointsScoredThirdQuarter>
-    <puntingInsideTwenty>7</puntingInsideTwenty>
-    <puntingKickerReturnsYards>187</puntingKickerReturnsYards>
-    <puntingReturnsYards>272</puntingReturnsYards>
+    <pointsAllowed>225</pointsAllowed>
+    <pointsAllowedFirstQuarter>48</pointsAllowedFirstQuarter>
+    <pointsAllowedSecondQuarter>78</pointsAllowedSecondQuarter>
+    <pointsAllowedThirdQuarter>50</pointsAllowedThirdQuarter>
+    <pointsScored>217</pointsScored>
+    <pointsScoredFirstQuarter>66</pointsScoredFirstQuarter>
+    <pointsScoredFourthQuarter>50</pointsScoredFourthQuarter>
+    <pointsScoredSecondQuarter>75</pointsScoredSecondQuarter>
+    <pointsScoredThirdQuarter>26</pointsScoredThirdQuarter>
+    <puntingInsideTwenty>11</puntingInsideTwenty>
+    <puntingKickerReturnsYards>331</puntingKickerReturnsYards>
+    <puntingReturnsYards>546</puntingReturnsYards>
     <puntingReturnsYardsAverage>null</puntingReturnsYardsAverage>
-    <puntingReturnsYardsLongest>25</puntingReturnsYardsLongest>
-    <puntingYards>1033</puntingYards>
+    <puntingReturnsYardsLongest>97</puntingReturnsYardsLongest>
+    <puntingYards>1839</puntingYards>
     <puntingYardsGrossAverage>null</puntingYardsGrossAverage>
     <puntingYardsLongest>60</puntingYardsLongest>
-    <puntingYardsNet>806</puntingYardsNet>
+    <puntingYardsNet>1468</puntingYardsNet>
     <puntingYardsNetAverage>null</puntingYardsNetAverage>
-    <punts>22</punts>
-    <puntsReturns>21</puntsReturns>
-    <receptions>97</receptions>
-    <receptionsSecondDownForFirstDown>30</receptionsSecondDownForFirstDown>
-    <receptionsThirtyPlusYards>7</receptionsThirtyPlusYards>
-    <receptionsYards>1075</receptionsYards>
+    <punts>38</punts>
+    <puntsReturns>40</puntsReturns>
+    <receptions>176</receptions>
+    <receptionsSecondDownForFirstDown>52</receptionsSecondDownForFirstDown>
+    <receptionsThirtyPlusYards>11</receptionsThirtyPlusYards>
+    <receptionsYards>1978</receptionsYards>
     <receptionsYardsAverage>null</receptionsYardsAverage>
-    <receptionsYardsLongest>60</receptionsYardsLongest>
-    <returnsYards>235</returnsYards>
-    <rushes>91</rushes>
-    <rushesAttemptedInsideTwenty>5</rushesAttemptedInsideTwenty>
-    <rushesTenPlusYards>14</rushesTenPlusYards>
-    <rushesTwentyPlusYards>2</rushesTwentyPlusYards>
-    <rushingTacklesForLoss>6</rushingTacklesForLoss>
-    <rushingTacklesForLossYards>-16</rushingTacklesForLossYards>
-    <rushingYards>473</rushingYards>
+    <receptionsYardsLongest>73</receptionsYardsLongest>
+    <returnsYards>600</returnsYards>
+    <rushes>186</rushes>
+    <rushesAttemptedInsideTwenty>11</rushesAttemptedInsideTwenty>
+    <rushesTenPlusYards>27</rushesTenPlusYards>
+    <rushesTwentyPlusYards>5</rushesTwentyPlusYards>
+    <rushingTacklesForLoss>9</rushingTacklesForLoss>
+    <rushingTacklesForLossYards>-21</rushingTacklesForLossYards>
+    <rushingYards>951</rushingYards>
     <rushingYardsAverage>null</rushingYardsAverage>
     <rushingYardsLongest>43</rushingYardsLongest>
-    <sacks>5</sacks>
-    <sacksForLossYards>42</sacksForLossYards>
-    <secondDownsAttempted>92</secondDownsAttempted>
-    <secondDownsConversions>45</secondDownsConversions>
+    <sacks>14</sacks>
+    <sacksForLossYards>87</sacksForLossYards>
+    <secondDownsAttempted>180</secondDownsAttempted>
+    <secondDownsConversions>83</secondDownsConversions>
     <secondDownsConversionsPercentage>null</secondDownsConversionsPercentage>
-    <secondDownsFourToSixYardsAttempted>28</secondDownsFourToSixYardsAttempted>
-    <secondDownsFourToSixYardsConversions>19</secondDownsFourToSixYardsConversions>
+    <secondDownsFourToSixYardsAttempted>50</secondDownsFourToSixYardsAttempted>
+    <secondDownsFourToSixYardsConversions>29</secondDownsFourToSixYardsConversions>
     <secondDownsFourToSixYardsConversionsPercentage>null</secondDownsFourToSixYardsConversionsPercentage>
-    <secondDownsOneToThreeYardsAttempted>16</secondDownsOneToThreeYardsAttempted>
-    <secondDownsOneToThreeYardsConversions>12</secondDownsOneToThreeYardsConversions>
+    <secondDownsOneToThreeYardsAttempted>39</secondDownsOneToThreeYardsAttempted>
+    <secondDownsOneToThreeYardsConversions>26</secondDownsOneToThreeYardsConversions>
     <secondDownsOneToThreeYardsConversionsPercentage>null</secondDownsOneToThreeYardsConversionsPercentage>
-    <secondDownsSevenPlusYardsAttempted>48</secondDownsSevenPlusYardsAttempted>
-    <secondDownsSevenPlusYardsConversions>14</secondDownsSevenPlusYardsConversions>
+    <secondDownsSevenPlusYardsAttempted>90</secondDownsSevenPlusYardsAttempted>
+    <secondDownsSevenPlusYardsConversions>27</secondDownsSevenPlusYardsConversions>
     <secondDownsSevenPlusYardsConversionsPercentage>null</secondDownsSevenPlusYardsConversionsPercentage>
-    <secondDownsYards>607</secondDownsYards>
+    <secondDownsYards>1214</secondDownsYards>
     <secondDownsYardsAverage>null</secondDownsYardsAverage>
-    <singles>1</singles>
+    <singles>2</singles>
     <singlesPunts>1</singlesPunts>
-    <tackles>178</tackles>
-    <tacklesForLoss>3</tacklesForLoss>
-    <tacklesForLossYards>3</tacklesForLossYards>
-    <tacklesSolo>143</tacklesSolo>
-    <tacklesSpecialTeam>35</tacklesSpecialTeam>
-    <thirdDownsAttempted>11</thirdDownsAttempted>
-    <thirdDownsConversions>8</thirdDownsConversions>
+    <tackles>355</tackles>
+    <tacklesForLoss>7</tacklesForLoss>
+    <tacklesForLossYards>8</tacklesForLossYards>
+    <tacklesSolo>296</tacklesSolo>
+    <tacklesSpecialTeam>59</tacklesSpecialTeam>
+    <thirdDownsAttempted>28</thirdDownsAttempted>
+    <thirdDownsConversions>19</thirdDownsConversions>
     <thirdDownsConversionsPercentage>null</thirdDownsConversionsPercentage>
-    <thirdDownsYards>28</thirdDownsYards>
+    <thirdDownsYards>62</thirdDownsYards>
     <thirdDownsYardsAverage>null</thirdDownsYardsAverage>
-    <timeOfPossessionSeconds>7696</timeOfPossessionSeconds>
-    <touchdowns>12</touchdowns>
-    <touchdownsPasses>9</touchdownsPasses>
+    <timeOfPossessionSeconds>15070</timeOfPossessionSeconds>
+    <touchdowns>22</touchdowns>
+    <touchdownsPasses>13</touchdownsPasses>
     <touchdownsPassesYardsLongest>60</touchdownsPassesYardsLongest>
-    <touchdownsReceptions>9</touchdownsReceptions>
+    <touchdownsReceptions>13</touchdownsReceptions>
     <touchdownsReceptionsYardsLongest>60</touchdownsReceptionsYardsLongest>
-    <touchdownsRushing>2</touchdownsRushing>
+    <touchdownsRushing>4</touchdownsRushing>
     <touchdownsRushingYardsLongest>38</touchdownsRushingYardsLongest>
-    <turnovers>9</turnovers>
-    <turnoversOnDowns>3</turnoversOnDowns>
-    <yardsAfterCatch>433</yardsAfterCatch>
-    <fumbles>2</fumbles>
-    <fumblesRecoveries>1</fumblesRecoveries>
-    <fumblesRecoveriesOwn>1</fumblesRecoveriesOwn>
-    <kneelsThirdDown>2</kneelsThirdDown>
-    <passesSackedFirstDown>1</passesSackedFirstDown>
-    <penaltiesDeclined>4</penaltiesDeclined>
-    <pointsAllowedFourthQuarter>16</pointsAllowedFourthQuarter>
-    <puntingInsideTen>1</puntingInsideTen>
-    <touchdownsFumblesReturn>1</touchdownsFumblesReturn>
-    <touchdownsReturns>1</touchdownsReturns>
-    <firstDownsPenalties>4</firstDownsPenalties>
-    <fumblesLost>1</fumblesLost>
-    <rushesSucceededInsideTwenty>1</rushesSucceededInsideTwenty>
+    <turnovers>26</turnovers>
+    <turnoversOnDowns>9</turnoversOnDowns>
+    <yardsAfterCatch>814</yardsAfterCatch>
+    <fumbles>6</fumbles>
+    <fumblesRecoveries>3</fumblesRecoveries>
+    <fumblesRecoveriesOwn>3</fumblesRecoveriesOwn>
+    <kneelsThirdDown>3</kneelsThirdDown>
+    <passesSackedFirstDown>3</passesSackedFirstDown>
+    <penaltiesDeclined>9</penaltiesDeclined>
+    <pointsAllowedFourthQuarter>49</pointsAllowedFourthQuarter>
+    <puntingInsideTen>3</puntingInsideTen>
+    <touchdownsFumblesReturn>3</touchdownsFumblesReturn>
+    <touchdownsReturns>5</touchdownsReturns>
+    <firstDownsPenalties>6</firstDownsPenalties>
+    <fumblesLost>3</fumblesLost>
+    <rushesSucceededInsideTwenty>3</rushesSucceededInsideTwenty>
+    <kickoffsInsideTwenty>2</kickoffsInsideTwenty>
+    <kickoffsOutOfBounds>2</kickoffsOutOfBounds>
+    <touchdownsKickoffsReturns>1</touchdownsKickoffsReturns>
+    <touchdownsKickoffsReturnsYardsLongest>93</touchdownsKickoffsReturnsYardsLongest>
+    <touchdownsPuntingReturns>1</touchdownsPuntingReturns>
+    <touchdownsPuntingReturnsYardsLongest>97</touchdownsPuntingReturnsYardsLongest>
+    <fieldGoalsMissedReturns>1</fieldGoalsMissedReturns>
+    <fieldGoalsMissedReturnsYards>36</fieldGoalsMissedReturnsYards>
+    <fieldGoalsMissedReturnsYardsAverage>null</fieldGoalsMissedReturnsYardsAverage>
+    <fieldGoalsMissedReturnsYardsLongest>36</fieldGoalsMissedReturnsYardsLongest>
+    <kickoffsInsideEndZone>1</kickoffsInsideEndZone>
+    <singlesKickoffs>1</singlesKickoffs>
   </Stats>
 </Team2025Stats>
