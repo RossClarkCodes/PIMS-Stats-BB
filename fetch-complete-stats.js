@@ -324,19 +324,31 @@ async function main() {
     const allPlayersFiltered = allPlayers.filter(p => p.has_stats && p.jersey_no != null);
     const allPlayersByJersey = {};
     for (const player of allPlayersFiltered) {
-      allPlayersByJersey[String(player.jersey_no)] = player;
+      // Flatten the player data structure - merge stats directly into player object
+      const flattenedPlayer = { ...player };
+      if (player.stats && typeof player.stats === 'object') {
+        Object.assign(flattenedPlayer, player.stats);
+        delete flattenedPlayer.stats; // Remove the nested stats object
+      }
+      allPlayersByJersey[String(player.jersey_no)] = flattenedPlayer;
     }
     fs.writeFileSync('public/all_players_2025_stats.json', JSON.stringify(allPlayersByJersey, null, 2));
-    console.log('✓ Written all_players_2025_stats.json (keyed by jersey_no)');
+    console.log('✓ Written all_players_2025_stats.json (keyed by jersey_no, flattened structure)');
 
     // Write WPG players JSON (keyed by jersey_no, only has_stats: true)
     const wpgPlayersFiltered = wpgPlayers.filter(p => p.has_stats && p.jersey_no != null);
     const wpgPlayersByJersey = {};
     for (const player of wpgPlayersFiltered) {
-      wpgPlayersByJersey[String(player.jersey_no)] = player;
+      // Flatten the player data structure - merge stats directly into player object
+      const flattenedPlayer = { ...player };
+      if (player.stats && typeof player.stats === 'object') {
+        Object.assign(flattenedPlayer, player.stats);
+        delete flattenedPlayer.stats; // Remove the nested stats object
+      }
+      wpgPlayersByJersey[String(player.jersey_no)] = flattenedPlayer;
     }
     fs.writeFileSync('public/wpg_players_2025_stats.json', JSON.stringify(wpgPlayersByJersey, null, 2));
-    console.log('✓ Written wpg_players_2025_stats.json (keyed by jersey_no)');
+    console.log('✓ Written wpg_players_2025_stats.json (keyed by jersey_no, flattened structure)');
     
     // Team stats XML
     const allTeamsXML = '<?xml version="1.0" encoding="UTF-8"?>\n<Teams2025Stats>\n' +
