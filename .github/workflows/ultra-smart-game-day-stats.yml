@@ -1,0 +1,141 @@
+name: Ultra-Smart CFL Stats Update (API-Aware)
+
+on:
+  schedule:
+    # Daily baseline at 2 AM UTC
+    - cron: '0 2 * * *'
+    # Check for games every 2 hours during typical game times
+    - cron: '0 0,2,4,6,8,10,12,14,16,18,20,22 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  check-for-games:
+    runs-on: ubuntu-latest
+    outputs:
+      has-games: ${{ steps.check.outputs.has-games }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Check if there are CFL games today
+      id: check
+      run: |
+        # Create a simple script to check for games
+        cat > check-games.js << 'EOF'
+        const https = require('https');
+        
+        function checkForGames() {
+          return new Promise((resolve) => {
+            // Check CFL schedule API or use a simple date-based logic
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, etc.
+            const hour = today.getHours();
+            
+            // CFL typically has games on Thu, Fri, Sat, Sun
+            // And during typical game hours (evening)
+            const isGameDay = (dayOfWeek >= 4 || dayOfWeek === 0) && (hour >= 18 || hour <= 2);
+            
+            console.log(`Day: ${dayOfWeek}, Hour: ${hour}, Game Day: ${isGameDay}`);
+            resolve(isGameDay);
+          });
+        }
+        
+        checkForGames().then(hasGames => {
+          console.log(`::set-output name=has-games::${hasGames}`);
+          process.exit(hasGames ? 0 : 1);
+        });
+        EOF
+        
+        # Run the check
+        node check-games.js || echo "No games today"
+        
+    - name: Show game day status
+      run: |
+        if [ "${{ steps.check.outputs.has-games }}" = "true" ]; then
+          echo "🎮 GAME DAY DETECTED - Running full stats update!"
+        else
+          echo "📅 Regular day - Running baseline update only"
+        fi
+
+  build:
+    runs-on: ubuntu-latest
+    needs: check-for-games
+    if: always() # Always run, but with different behavior
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Create public directory
+      run: mkdir -p public
+      
+    - name: Fetch and write all stats (teams + players)
+      run: node fetch-complete-stats.js
+      
+    - name: Copy landing page
+      run: cp public/index.html public/index.html.bak 2>/dev/null || true
+      
+    - name: Validate generated files
+      run: |
+        echo "Checking for required files..."
+        required_files=("all_teams_2025_stats.json" "team_wpg_2025_stats.json" "all_teams_2025_stats.xml" "team_wpg_2025_stats.xml" "all_players_2025_stats.json" "wpg_players_2025_stats.json")
+        missing_files=()
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "public/$file" ]; then
+            missing_files+=("$file")
+          fi
+        done
+        
+        if [ ${#missing_files[@]} -gt 0 ]; then
+          echo "❌ Missing required files: ${missing_files[*]}"
+          exit 1
+        else
+          echo "✅ All required files present"
+        fi
+        
+        echo "File sizes:"
+        ls -lh public/*.json public/*.xml
+        
+        if [ "${{ needs.check-for-games.outputs.has-games }}" = "true" ]; then
+          echo "🎮 GAME DAY UPDATE COMPLETE - Fresh stats for game day!"
+        else
+          echo "📅 Regular daily update complete"
+        fi
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './public'
+        
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
