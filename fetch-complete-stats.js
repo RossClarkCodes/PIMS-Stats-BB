@@ -179,7 +179,9 @@ function validateFiles() {
     'all_teams_2025_stats.xml',
     'team_wpg_2025_stats.xml',
     'all_players_2025_stats.json',
-    'wpg_players_2025_stats.json'
+    'wpg_players_2025_stats.json',
+    'ssk_players_2025_stats.json',
+    'mtl_players_2025_stats.json'
   ];
   
   const missingFiles = [];
@@ -242,6 +244,8 @@ async function main() {
   console.log('\n=== FETCHING PLAYER DATA ===');
   const allPlayers = [];
   const wpgPlayers = [];
+  const sskPlayers = [];
+  const mtlPlayers = [];
   let playerSuccessCount = 0;
   let totalPlayers = 0;
   
@@ -264,6 +268,10 @@ async function main() {
           
           if (team.id === 20) {
             wpgPlayers.push(playerData);
+          } else if (team.id === 17) {
+            sskPlayers.push(playerData);
+          } else if (team.id === 11) {
+            mtlPlayers.push(playerData);
           }
           
           if (playerStats.has_stats) {
@@ -349,6 +357,34 @@ async function main() {
     }
     fs.writeFileSync('public/wpg_players_2025_stats.json', JSON.stringify(wpgPlayersByJersey, null, 2));
     console.log('✓ Written wpg_players_2025_stats.json (keyed by jersey_no, flattened structure)');
+
+    // Write SSK players JSON (keyed by jersey_no, only has_stats: true)
+    const sskPlayersFiltered = sskPlayers.filter(p => p.has_stats && p.jersey_no != null);
+    const sskPlayersByJersey = {};
+    for (const player of sskPlayersFiltered) {
+      const flattenedPlayer = { ...player };
+      if (player.stats && typeof player.stats === 'object') {
+        Object.assign(flattenedPlayer, player.stats);
+        delete flattenedPlayer.stats;
+      }
+      sskPlayersByJersey[String(player.jersey_no)] = flattenedPlayer;
+    }
+    fs.writeFileSync('public/ssk_players_2025_stats.json', JSON.stringify(sskPlayersByJersey, null, 2));
+    console.log('✓ Written ssk_players_2025_stats.json (keyed by jersey_no, flattened structure)');
+
+    // Write MTL players JSON (keyed by jersey_no, only has_stats: true)
+    const mtlPlayersFiltered = mtlPlayers.filter(p => p.has_stats && p.jersey_no != null);
+    const mtlPlayersByJersey = {};
+    for (const player of mtlPlayersFiltered) {
+      const flattenedPlayer = { ...player };
+      if (player.stats && typeof player.stats === 'object') {
+        Object.assign(flattenedPlayer, player.stats);
+        delete flattenedPlayer.stats;
+      }
+      mtlPlayersByJersey[String(player.jersey_no)] = flattenedPlayer;
+    }
+    fs.writeFileSync('public/mtl_players_2025_stats.json', JSON.stringify(mtlPlayersByJersey, null, 2));
+    console.log('✓ Written mtl_players_2025_stats.json (keyed by jersey_no, flattened structure)');
     
     // Team stats XML
     const allTeamsXML = '<?xml version="1.0" encoding="UTF-8"?>\n<Teams2025Stats>\n' +

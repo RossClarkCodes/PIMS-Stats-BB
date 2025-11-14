@@ -39,7 +39,7 @@ jobs:
     - name: Validate generated files
       run: |
         echo "Checking for required files..."
-        required_files=("all_teams_2025_stats.json" "team_wpg_2025_stats.json" "all_teams_2025_stats.xml" "team_wpg_2025_stats.xml" "all_players_2025_stats.json" "wpg_players_2025_stats.json")
+        required_files=("all_teams_2025_stats.json" "team_wpg_2025_stats.json" "all_teams_2025_stats.xml" "team_wpg_2025_stats.xml" "all_players_2025_stats.json" "wpg_players_2025_stats.json" "ssk_players_2025_stats.json" "mtl_players_2025_stats.json")
         missing_files=()
         
         for file in "${required_files[@]}"; do
